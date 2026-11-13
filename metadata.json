@@ -1,0 +1,6 @@
+{
+  "name": "NEXA AI",
+  "description": "3D Phone Control & Autonomous AI Agent Assistant powered by Gemini & custom API keys.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

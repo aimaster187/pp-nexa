@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">NEXA AI</string>
+    <string name="accessibility_service_description">NEXA AI uses Accessibility only when you enable it to read active screen elements, tap controls, scroll, type replies, and execute your voice or agent automation commands.</string>
+    <string name="notification_listener_label">NEXA AI Auto-Reply &amp; OTP Listener</string>
+</resources>

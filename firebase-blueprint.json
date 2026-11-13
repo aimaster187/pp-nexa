@@ -1,0 +1,105 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "NEXA AI user preferences, boss display name, wake words, and active AI provider.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Authenticated Firebase Auth UID" },
+        "bossName": { "type": "string", "description": "Preferred user greeting name such as BOSS" },
+        "wakeWords": { "type": "array", "description": "Voice wake phrases such as hey nexa, hello nexa, alexa" },
+        "activeProvider": {
+          "type": "string",
+          "enum": ["FIREBASE_GEMINI", "CUSTOM_GEMINI", "OPENAI", "GROQ", "CUSTOM_ENDPOINT"],
+          "description": "Active LLM engine"
+        },
+        "energyPoints": { "type": "integer", "description": "Automation & agent activity score" },
+        "moodStatus": { "type": "string", "description": "Current assistant telemetry mood status" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp on create" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Server timestamp on update" }
+      },
+      "required": ["userId", "bossName", "wakeWords", "activeProvider", "energyPoints", "moodStatus", "createdAt", "updatedAt"]
+    },
+    "CustomAgent": {
+      "title": "CustomAgent",
+      "description": "User-created autonomous phone control agent with system instructions and tool permissions.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Owner UID" },
+        "name": { "type": "string", "description": "Agent display name" },
+        "role": { "type": "string", "description": "Short role description" },
+        "systemPrompt": { "type": "string", "description": "Agent prompt instructions" },
+        "triggerType": {
+          "type": "string",
+          "enum": ["MANUAL", "WHATSAPP_INCOMING", "GMAIL_INCOMING", "OTP_EVENT", "VOICE_WAKE", "SCHEDULED"]
+        },
+        "allowedTools": { "type": "array", "description": "Permitted phone-control actions" },
+        "isEnabled": { "type": "boolean" },
+        "autoExecute": { "type": "boolean" },
+        "runCount": { "type": "integer" },
+        "accentColorHex": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "name", "role", "systemPrompt", "triggerType", "allowedTools", "isEnabled", "autoExecute", "runCount", "accentColorHex", "createdAt", "updatedAt"]
+    },
+    "AutomationRule": {
+      "title": "AutomationRule",
+      "description": "Auto-reply, Gmail OTP, and UI macro automation rule.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "title": { "type": "string" },
+        "targetApp": {
+          "type": "string",
+          "enum": ["WHATSAPP", "GMAIL", "SMS", "PLAY_STORE", "SYSTEM"]
+        },
+        "triggerPattern": { "type": "string" },
+        "replyTemplateOrGoal": { "type": "string" },
+        "useAiReply": { "type": "boolean" },
+        "isActive": { "type": "boolean" },
+        "requireConfirmation": { "type": "boolean" },
+        "triggeredCount": { "type": "integer" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "title", "targetApp", "triggerPattern", "replyTemplateOrGoal", "useAiReply", "isActive", "requireConfirmation", "triggeredCount", "createdAt", "updatedAt"]
+    },
+    "MemoryEntry": {
+      "title": "MemoryEntry",
+      "description": "Saved Yaadein memory, chat milestone, or execution summary.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "title": { "type": "string" },
+        "content": { "type": "string" },
+        "category": {
+          "type": "string",
+          "enum": ["CHAT", "AUTOMATION", "MEMORY", "OTP_RULE"]
+        },
+        "agentName": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "title", "content", "category", "agentName", "createdAt", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "Authenticated user profile and NEXA AI preferences."
+    },
+    "/users/{userId}/agents/{agentId}": {
+      "schema": { "$ref": "#/entities/CustomAgent" },
+      "description": "Custom AI agents created by the user."
+    },
+    "/users/{userId}/automations/{ruleId}": {
+      "schema": { "$ref": "#/entities/AutomationRule" },
+      "description": "Auto-reply, OTP, and phone automation rules."
+    },
+    "/users/{userId}/memories/{memoryId}": {
+      "schema": { "$ref": "#/entities/MemoryEntry" },
+      "description": "Yaadein persistent memory and command summaries."
+    }
+  }
+}
