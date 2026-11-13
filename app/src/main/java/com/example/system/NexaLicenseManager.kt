@@ -24,7 +24,7 @@ data class LicenseUiState(
     val errorMessage: String? = null
 ) {
     val isLoading: Boolean get() = isChecking
-    val statusMessage: String? get() = errorMessage
+    val statusMessage: String get() = errorMessage ?: ""
     val needsPhoneNumber: Boolean get() = false
 }
 
@@ -120,7 +120,7 @@ object NexaLicenseManager {
 
 
     suspend fun initAndSyncUser(context: Context) { init(context) }
-    suspend fun saveUserPhone(context: Context, phone: String) {}
+    fun saveUserPhone(context: Context, phone: String) {}
     suspend fun activateKey(context: Context, key: String): Boolean = verifyAndActivateKey(context, key)
 
     fun logoutUser(context: Context) {

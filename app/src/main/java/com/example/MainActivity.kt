@@ -487,6 +487,42 @@ fun NexaMainWorkspace(
                       Icon(Icons.Default.Lock, contentDescription = null, tint = Color(0xFF2563EB), modifier = Modifier.padding(bottom = 10.dp))
                       Text("ZED AI VIP LOCKED", fontSize = 22.sp, fontWeight = FontWeight.Bold, color = Color(0xFF1E293B))
                       Text("by The Titan AI", fontSize = 12.sp, color = Color(0xFF2563EB), fontWeight = FontWeight.SemiBold)
+                        if (!licState.isLoggedIn) {
+                          var authName by remember { mutableStateOf(licState.userDisplayName) }
+                          var authEmail by remember { mutableStateOf(licState.userEmail) }
+                          Spacer(modifier = Modifier.height(10.dp))
+                          OutlinedTextField(
+                            value = authName,
+                            onValueChange = { authName = it },
+                            label = { Text("Aapka Naam (e.g. Pranav)") },
+                            textStyle = androidx.compose.ui.text.TextStyle(color = Color(0xFF0F172A)),
+                            singleLine = true,
+                            shape = RoundedCornerShape(16.dp),
+                            modifier = Modifier.fillMaxWidth()
+                          )
+                          Spacer(modifier = Modifier.height(6.dp))
+                          OutlinedTextField(
+                            value = authEmail,
+                            onValueChange = { authEmail = it },
+                            label = { Text("Google / Gmail Address") },
+                            textStyle = androidx.compose.ui.text.TextStyle(color = Color(0xFF0F172A)),
+                            singleLine = true,
+                            shape = RoundedCornerShape(16.dp),
+                            modifier = Modifier.fillMaxWidth()
+                          )
+                          Button(
+                            onClick = {
+                              val em = authEmail.trim().ifBlank { "user_${System.currentTimeMillis() % 9999}@gmail.com" }
+                              val nm = authName.trim().ifBlank { em.substringBefore("@") }
+                              scope.launch { NexaLicenseManager.registerOrLoginUser(context, nm, em, "Google Sign-In") }
+                            },
+                            shape = RoundedCornerShape(16.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF10B981)),
+                            modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+                          ) {
+                            Text("Continue with Google (10 Min Free)", color = Color.White, fontWeight = FontWeight.Bold)
+                          }
+                        }
                       Text(
                         "Aaj ka 10-minute FREE trial poora ho gaya hai! Unlimited 24x7 use ke liye VIP License Key dalein.",
                         fontSize = 13.sp,
