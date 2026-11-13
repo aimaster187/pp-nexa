@@ -85,6 +85,11 @@ import com.example.ui.screens.AuthScreen
 import com.example.ui.screens.HomeOrbScreen
 import com.example.ui.screens.MemoryChatScreen
 import com.example.ui.screens.PhoneControlConsoleScreen
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import com.example.system.NexaLicenseManager
 import com.example.ui.theme.NexaAiTheme
 import com.example.ui.theme.NexaBlueCore
 import com.example.ui.theme.NexaDarkBgBottom
@@ -357,6 +362,43 @@ fun NexaMainWorkspace(
         Box(modifier = Modifier.fillMaxSize().padding(top = innerPadding.calculateTopPadding())) {
           when (selectedTab) {
             NexaTab.HOME -> {
+              
+              val licState by NexaLicenseManager.state.collectAsState()
+              LaunchedEffect(profile?.uid) {
+                NexaLicenseManager.initAndSyncUser(context)
+              }
+              if (licState.isBanned) {
+                Box(
+                  modifier = Modifier.fillMaxSize().background(androidx.compose.ui.graphics.Color(0xFF060913)).padding(24.dp),
+                  contentAlignment = androidx.compose.ui.Alignment.Center
+                ) {
+                  Column(horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally) {
+                    Text("ACCOUNT SUSPENDED", color = androidx.compose.ui.graphics.Color(0xFFFF2A6D), style = MaterialTheme.typography.headlineMedium)
+                    Text("NEXA Admin dwara aapka access band kar diya gaya hai.", color = androidx.compose.ui.graphics.Color.White, modifier = Modifier.padding(top = 8.dp))
+                  }
+                }
+              } else {
+                if (licState.needsPhoneNumber) {
+                  var phoneDraft by remember { mutableStateOf("") }
+                  AlertDialog(
+                    onDismissRequest = {},
+                    title = { Text("Verify Contact Number") },
+                    text = {
+                      OutlinedTextField(
+                        value = phoneDraft,
+                        onValueChange = { phoneDraft = it },
+                        label = { Text("WhatsApp / Mobile Number") },
+                        singleLine = true
+                      )
+                    },
+                    confirmButton = {
+                      Button(onClick = { NexaLicenseManager.saveUserPhone(context, phoneDraft) }) {
+                        Text("Save & Continue")
+                      }
+                    }
+                  )
+                }
+              }
               HomeOrbScreen(
                 profile = profile,
                 agents = agents,

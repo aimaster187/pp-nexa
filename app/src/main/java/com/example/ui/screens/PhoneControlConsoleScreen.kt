@@ -1,5 +1,11 @@
 package com.example.ui.screens
 
+import android.content.Intent
+import android.provider.Settings
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.platform.LocalContext
+import com.example.system.NexaLicenseManager
+
 import android.Manifest
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -126,6 +132,34 @@ fun PhoneControlConsoleScreen(
     modifier = Modifier.fillMaxSize().padding(horizontal = 18.dp),
     verticalArrangement = Arrangement.spacedBy(12.dp),
   ) {
+    val ctx = LocalContext.current
+    val licState by NexaLicenseManager.state.collectAsState()
+    androidx.compose.material3.Card(
+      modifier = androidx.compose.ui.Modifier.fillMaxWidth().padding(bottom = 12.dp),
+      colors = androidx.compose.material3.CardDefaults.cardColors(
+        containerColor = androidx.compose.ui.graphics.Color(0xFF0A1326)
+      )
+    ) {
+      androidx.compose.foundation.layout.Column(modifier = androidx.compose.ui.Modifier.padding(14.dp)) {
+        androidx.compose.material3.Text(
+          text = if (licState.isVipUnlocked) "VIP OS ACTIVE • FULL PHONE CONTROL UNLOCKED" else "VIP LOCKED • API Keys Vault me VIP Key dalein",
+          color = if (licState.isVipUnlocked) androidx.compose.ui.graphics.Color(0xFF00E676) else androidx.compose.ui.graphics.Color(0xFFFF2A6D),
+          fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+        )
+        androidx.compose.foundation.layout.Spacer(modifier = androidx.compose.ui.Modifier.height(8.dp))
+        androidx.compose.material3.Button(
+          onClick = {
+            try {
+              ctx.startActivity(Intent(Settings.ACTION_VOICE_INPUT_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+            } catch (_: Exception) {}
+          },
+          modifier = androidx.compose.ui.Modifier.fillMaxWidth()
+        ) {
+          androidx.compose.material3.Text("Set NEXA as Power Button Assistant")
+        }
+      }
+    }
+
     item {
       Text("Phone Control & Permissions", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
       Text("Enable only the Android permissions you approve (user ki marji se).", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
