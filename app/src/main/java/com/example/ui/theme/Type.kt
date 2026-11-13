@@ -8,9 +8,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.example.R
 
-val SpaceGroteskFont = FontFamily.SansSerif)
-val PlusJakartaFont = FontFamily.SansSerif)
-val JetBrainsMonoFont = FontFamily.SansSerif)
+val SpaceGroteskFont = FontFamily(Font(R.font.space_grotesk, FontWeight.Normal))
+val PlusJakartaFont = FontFamily(Font(R.font.plus_jakarta_sans, FontWeight.Normal))
+val JetBrainsMonoFont = FontFamily(Font(R.font.jetbrains_mono, FontWeight.Normal))
 
 val NexaTypography =
   Typography(
