@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>NEXA AI — 5D Quantum Command Center</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --cyan: #00f0ff;
+      --violet: #8b5cf6;
+      --emerald: #00ff9d;
+      --rose: #ff2a6d;
+      --bg: #03060f;
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body {
+      background: var(--bg);
+      color: #e2e8f0;
+      font-family: 'Rajdhani', sans-serif;
+      overflow-x: hidden;
+      perspective: 1400px;
+    }
+    .font-cyber { font-family: 'Orbitron', sans-serif; }
+
+    /* 3D Canvas Background */
+    #holoCanvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* 5D Holographic Glass Slab */
+    .card-5d {
+      position: relative;
+      background: linear-gradient(145deg, rgba(14, 22, 42, 0.86), rgba(6, 10, 22, 0.94));
+      border: 1px solid rgba(0, 240, 255, 0.35);
+      border-top: 1.5px solid rgba(255, 255, 255, 0.35);
+      border-left: 1.5px solid rgba(0, 240, 255, 0.45);
+      border-radius: 24px;
+      box-shadow:
+        0 18px 40px -10px rgba(0, 0, 0, 0.85),
+        0 0 25px rgba(0, 240, 255, 0.12),
+        inset 0 1px 1px rgba(255, 255, 255, 0.18);
+      backdrop-filter: blur(18px);
+      transform-style: preserve-3d;
+      transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s ease;
+    }
+    .card-5d::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 24px;
+      background: linear-gradient(125deg, rgba(255,255,255,0.12) 0%, transparent 40%, rgba(0,240,255,0.08) 100%);
+      pointer-events: none;
+    }
+
+    /* Real Tactile 3D Mechanical Push Buttons */
+    .btn-3d {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      border-radius: 16px;
+      transform: translateY(0px);
+      transition: transform 0.08s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.08s ease, filter 0.15s ease;
+      cursor: pointer;
+      user-select: none;
+    }
+    .btn-3d-cyan {
+      background: linear-gradient(180deg, #22f5ff 0%, #00b8d4 100%);
+      color: #020813;
+      border-top: 2px solid #b8ffff;
+      box-shadow:
+        0 6px 0 #006073,
+        0 12px 24px rgba(0, 240, 255, 0.45);
+    }
+    .btn-3d-cyan:active {
+      transform: translateY(5px);
+      box-shadow:
+        0 1px 0 #006073,
+        0 4px 10px rgba(0, 240, 255, 0.35);
+    }
+
+    .btn-3d-emerald {
+      background: linear-gradient(180deg, #34ffab 0%, #00c476 100%);
+      color: #02120a;
+      border-top: 2px solid #c4ffe6;
+      box-shadow:
+        0 6px 0 #00663d,
+        0 12px 24px rgba(0, 255, 157, 0.4);
+    }
+    .btn-3d-emerald:active {
+      transform: translateY(5px);
+      box-shadow:
+        0 1px 0 #00663d,
+        0 4px 10px rgba(0, 255, 157, 0.3);
+    }
+
+    .btn-3d-rose {
+      background: linear-gradient(180deg, #ff5286 0%, #d81b54 100%);
+      color: #ffffff;
+      border-top: 2px solid #ffb3c9;
+      box-shadow:
+        0 5px 0 #75092a,
+        0 10px 20px rgba(255, 42, 109, 0.4);
+    }
+    .btn-3d-rose:active {
+      transform: translateY(4px);
+      box-shadow:
+        0 1px 0 #75092a,
+        0 3px 8px rgba(255, 42, 109, 0.3);
+    }
+
+    .btn-3d-dark {
+      background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+      color: #e2e8f0;
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      border-top: 1.5px solid rgba(255, 255, 255, 0.25);
+      box-shadow:
+        0 5px 0 #020617,
+        0 10px 18px rgba(0, 0, 0, 0.7);
+    }
+    .btn-3d-dark:active {
+      transform: translateY(4px);
+      box-shadow:
+        0 1px 0 #020617,
+        0 3px 8px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Recessed 3D Input Wells */
+    .input-3d {
+      background: rgba(2, 6, 18, 0.9);
+      border: 1px solid rgba(0, 240, 255, 0.28);
+      border-radius: 16px;
+      color: #fff;
+      box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.85), 0 1px 0 rgba(255, 255, 255, 0.1);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .input-3d:focus {
+      outline: none;
+      border-color: var(--cyan);
+      box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.85), 0 0 16px rgba(0, 240, 255, 0.35);
+    }
+
+    /* Hologram Scanline */
+    .scanline {
+      position: fixed;
+      top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, transparent, var(--cyan), var(--violet), transparent);
+      box-shadow: 0 0 18px var(--cyan);
+      animation: scanMove 5s linear infinite;
+      z-index: 50;
+      pointer-events: none;
+    }
+    @keyframes scanMove {
+      0% { top: 0%; opacity: 0.2; }
+      50% { opacity: 0.9; }
+      100% { top: 100%; opacity: 0.2; }
+    }
+  </style>
+</head>
+<body class="min-h-screen p-4 md:p-8 relative">
+
+  <canvas id="holoCanvas"></canvas>
+  <div class="scanline"></div>
+
+  <!-- 5D ADMIN LOGIN GATE -->
+  <div id="loginGate" class="relative z-10 max-w-md mx-auto mt-12 card-5d p-8">
+    <div class="text-center mb-7">
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-400/40 shadow-lg">
+        <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping"></span>
+        <span class="font-cyber text-[11px] text-cyan-300 tracking-widest">5D QUANTUM CORE • ADMIN</span>
+      </div>
+      <h1 class="font-cyber text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-white to-violet-400 mt-4 tracking-wider">
+        NEXA AI
+      </h1>
+      <p class="text-slate-400 text-base font-medium mt-1">Holographic Master License & User Grid</p>
+    </div>
+
+    <div class="space-y-5">
+      <div>
+        <label class="block font-cyber text-[11px] text-cyan-300 tracking-wider mb-2">MASTER SECURITY PASSCODE</label>
+        <input id="adminPassInput" type="password" placeholder="••••••••••••"
+          class="input-3d w-full px-4 py-3.5 text-lg tracking-widest" />
+      </div>
+      <button onclick="playClick(); unlockAdmin()" class="btn-3d btn-3d-cyan w-full py-4 text-sm">
+        INITIALIZE COMMAND CENTER
+      </button>
+      <p id="loginErr" class="text-rose-400 text-sm font-bold text-center hidden">ACCESS DENIED: Invalid Passcode!</p>
+    </div>
+  </div>
+
+  <!-- 5D MASTER DASHBOARD -->
+  <div id="dashboard" class="relative z-10 max-w-6xl mx-auto hidden space-y-6 pb-12">
+
+    <!-- Top 3D Command Header -->
+    <div class="card-5d p-5 md:p-6 flex flex-wrap items-center justify-between gap-4">
+      <div>
+        <div class="flex items-center gap-2.5">
+          <span class="w-3 h-3 rounded-full bg-emerald-400 shadow-[0_0_12px_#00ff9d] animate-pulse"></span>
+          <h1 class="font-cyber text-xl md:text-2xl font-black text-white tracking-wider">NEXA AI • 5D CONTROL</h1>
+        </div>
+        <p class="text-sm text-cyan-300/80 mt-0.5">Live Cloud Node: <span class="font-mono text-xs text-slate-300">gen-lang-client-0039144139</span></p>
+      </div>
+      <div class="flex gap-3">
+        <button onclick="playClick(); loadAllData()" class="btn-3d btn-3d-dark px-4 py-2.5 text-xs">SYNC GRID</button>
+        <button onclick="playClick(); logoutAdmin()" class="btn-3d btn-3d-rose px-4 py-2.5 text-xs">LOCK</button>
+      </div>
+    </div>
+
+    <!-- 3D Telemetry Stats Cubes -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="card-5d p-4 md:p-5">
+        <p class="font-cyber text-[10px] text-slate-400 tracking-widest">TOTAL USERS</p>
+        <p id="statUsers" class="font-cyber text-3xl font-black text-white mt-1.5 drop-shadow-[0_0_10px_rgba(255,255,255,0.4)]">0</p>
+      </div>
+      <div class="card-5d p-4 md:p-5">
+        <p class="font-cyber text-[10px] text-emerald-300 tracking-widest">ACTIVE VIP</p>
+        <p id="statActiveKeys" class="font-cyber text-3xl font-black text-emerald-400 mt-1.5 drop-shadow-[0_0_12px_rgba(0,255,157,0.5)]">0</p>
+      </div>
+      <div class="card-5d p-4 md:p-5">
+        <p class="font-cyber text-[10px] text-cyan-300 tracking-widest">UNUSED KEYS</p>
+        <p id="statFreeKeys" class="font-cyber text-3xl font-black text-cyan-400 mt-1.5 drop-shadow-[0_0_12px_rgba(0,240,255,0.5)]">0</p>
+      </div>
+      <div class="card-5d p-4 md:p-5">
+        <p class="font-cyber text-[10px] text-rose-300 tracking-widest">BANNED</p>
+        <p id="statBanned" class="font-cyber text-3xl font-black text-rose-400 mt-1.5 drop-shadow-[0_0_12px_rgba(255,42,109,0.5)]">0</p>
+      </div>
+    </div>
+
+    <!-- 3D License Key Forge -->
+    <div class="card-5d p-5 md:p-6">
+      <h2 class="font-cyber text-base md:text-lg font-bold text-cyan-300 tracking-wider mb-4">FORGE NEW VIP LICENSE KEY</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <input id="keyLabel" type="text" placeholder="Client Name / Note (e.g. Aman VIP)"
+          class="input-3d px-4 py-3.5 text-base" />
+        <select id="keyValidity" class="input-3d px-4 py-3.5 text-base">
+          <option value="7">7 Days Trial Access</option>
+          <option value="30" selected>30 Days (1 Month VIP)</option>
+          <option value="90">90 Days (3 Months VIP)</option>
+          <option value="365">365 Days (1 Year VIP)</option>
+          <option value="0">Lifetime Quantum Access</option>
+        </select>
+        <button onclick="playClick(); generateKey()" class="btn-3d btn-3d-emerald py-3.5 px-6 text-xs md:text-sm">
+          + GENERATE 3D KEY
+        </button>
+      </div>
+
+      <div id="newKeyBox" class="mt-5 p-4 rounded-2xl bg-emerald-500/10 border border-emerald-400/40 hidden flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <p class="font-cyber text-[10px] text-emerald-300 tracking-widest">KEY FORGED & SYNCED TO CLOUD</p>
+          <p id="newKeyText" class="text-xl md:text-2xl font-mono font-bold text-white mt-0.5 tracking-wider"></p>
+        </div>
+        <div class="flex gap-3">
+          <button onclick="playClick(); copyNewKey()" class="btn-3d btn-3d-cyan px-4 py-2.5 text-xs">COPY KEY</button>
+          <button onclick="playClick(); shareWhatsApp()" class="btn-3d btn-3d-emerald px-4 py-2.5 text-xs">WHATSAPP</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search & 3D Tab Switcher -->
+    <div class="flex flex-wrap items-center justify-between gap-4">
+      <div class="flex gap-3">
+        <button id="tabKeysBtn" onclick="playClick(); switchTab('keys')" class="btn-3d btn-3d-cyan px-5 py-3 text-xs">VIP KEYS</button>
+        <button id="tabUsersBtn" onclick="playClick(); switchTab('users')" class="btn-3d btn-3d-dark px-5 py-3 text-xs">USERS & CONTACTS</button>
+      </div>
+      <input id="searchInput" oninput="renderFiltered()" type="text" placeholder="Search Name, Phone, Email, Key..."
+        class="input-3d px-4 py-2.5 text-sm w-full md:w-80" />
+    </div>
+
+    <!-- KEYS LIST -->
+    <div id="keysSection" class="space-y-4"></div>
+
+    <!-- USERS LIST -->
+    <div id="usersSection" class="space-y-4 hidden"></div>
+  </div>
+
+  <script>
+    // === TACTILE 3D MECHANICAL SOUND & HAPTIC ENGINE ===
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    window.playClick = () => {
+      try {
+        if (navigator.vibrate) navigator.vibrate(18);
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(520, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(110, audioCtx.currentTime + 0.055);
+        gain.gain.setValueAtTime(0.22, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.055);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.06);
+      } catch (e) {}
+    };
+
+    // === 3D INTERACTIVE HOLOGRAPHIC SPHERE & MATRIX BACKGROUND ===
+    const canvas = document.getElementById('holoCanvas');
+    const ctx = canvas.getContext('2d');
+    let w, h, rotY = 0, rotX = 0.25, tiltX = 0, tiltY = 0;
+
+    function resize() {
+      w = canvas.width = window.innerWidth;
+      h = canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    window.addEventListener('deviceorientation', (e) => {
+      if (e.gamma !== null && e.beta !== null) {
+        tiltY = (e.gamma / 45) * 0.4;
+        tiltX = ((e.beta - 45) / 45) * 0.4;
+      }
+    });
+
+    const nodes = [];
+    for (let i = 0; i < 65; i++) {
+      const phi = Math.acos(-1 + (2 * i) / 65);
+      const theta = Math.sqrt(65 * Math.PI) * phi;
+      nodes.push({
+        x: Math.cos(theta) * Math.sin(phi),
+        y: Math.sin(theta) * Math.sin(phi),
+        z: Math.cos(phi)
+      });
+    }
+
+    function drawHolo() {
+      ctx.clearRect(0, 0, w, h);
+      rotY += 0.0045;
+      const cx = w * 0.5 + tiltY * 60;
+      const cy = h * 0.36 + tiltX * 60;
+      const radius = Math.min(w, h) * 0.34;
+
+      const proj = nodes.map(n => {
+        const x1 = n.x * Math.cos(rotY) - n.z * Math.sin(rotY);
+        const z1 = n.z * Math.cos(rotY) + n.x * Math.sin(rotY);
+        const y2 = n.y * Math.cos(rotX + tiltX) - z1 * Math.sin(rotX + tiltX);
+        const z2 = z1 * Math.cos(rotX + tiltX) + n.y * Math.sin(rotX + tiltX);
+        const scale = 320 / (320 + z2 * 140);
+        return { px: cx + x1 * radius * scale, py: cy + y2 * radius * scale, z: z2, scale };
+      });
+
+      for (let i = 0; i < proj.length; i++) {
+        for (let j = i + 1; j < proj.length; j++) {
+          const dx = proj[i].px - proj[j].px;
+          const dy = proj[i].py - proj[j].py;
+          const dist = Math.hypot(dx, dy);
+          if (dist < radius * 0.46) {
+            ctx.strokeStyle = `rgba(0, 240, 255, ${(1 - dist / (radius * 0.46)) * 0.22})`;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(proj[i].px, proj[i].py);
+            ctx.lineTo(proj[j].px, proj[j].py);
+            ctx.stroke();
+          }
+        }
+      }
+
+      proj.forEach(p => {
+        ctx.fillStyle = p.z > 0 ? 'rgba(139, 92, 246, 0.65)' : 'rgba(0, 240, 255, 0.9)';
+        ctx.beginPath();
+        ctx.arc(p.px, p.py, 2.4 * p.scale, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      requestAnimationFrame(drawHolo);
+    }
+    drawHolo();
+  </script>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+    import { getFirestore, collection, doc, setDoc, getDocs, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAoIkiPgmcOknwn0HAjVkTSjkbMA_YvZak",
+      authDomain: "gen-lang-client-0039144139.firebaseapp.com",
+      projectId: "gen-lang-client-0039144139",
+      storageBucket: "gen-lang-client-0039144139.firebasestorage.app",
+      messagingSenderId: "788118554337",
+      appId: "1:788118554337:android:3a0b137e7ec01dfdf319a0"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    let lastCreatedKey = "";
+    let cachedKeys = [];
+    let cachedUsers = [];
+
+    window.unlockAdmin = () => {
+      const pass = document.getElementById("adminPassInput").value.trim();
+      if (pass === "pranav2026" || pass === "nexa@2026") {
+        localStorage.setItem("nexa_admin_ok", "1");
+        document.getElementById("loginGate").classList.add("hidden");
+        document.getElementById("dashboard").classList.remove("hidden");
+        loadAllData();
+      } else {
+        document.getElementById("loginErr").classList.remove("hidden");
+      }
+    };
+
+    window.logoutAdmin = () => {
+      localStorage.removeItem("nexa_admin_ok");
+      location.reload();
+    };
+
+    if (localStorage.getItem("nexa_admin_ok") === "1") {
+      document.getElementById("loginGate").classList.add("hidden");
+      document.getElementById("dashboard").classList.remove("hidden");
+      setTimeout(() => loadAllData(), 200);
+    }
+
+    function randomChunk(len) {
+      const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+      let out = "";
+      for (let i = 0; i < len; i++) out += chars[Math.floor(Math.random() * chars.length)];
+      return out;
+    }
+
+    window.generateKey = async () => {
+      const label = document.getElementById("keyLabel").value.trim() || "VIP Client";
+      const days = parseInt(document.getElementById("keyValidity").value, 10);
+      const key = `NEXA-VIP-${randomChunk(4)}-${randomChunk(4)}`;
+      const now = Date.now();
+      const expiresAt = days === 0 ? 0 : now + days * 24 * 60 * 60 * 1000;
+
+      await setDoc(doc(db, "license_keys", key), {
+        key, label, isActive: true, isBanned: false, createdAt: now, expiresAt,
+        boundDeviceId: "", boundUserId: "", boundUserName: "", boundUserEmail: "", boundUserPhone: "", boundDeviceModel: ""
+      });
+
+      lastCreatedKey = key;
+      document.getElementById("newKeyText").innerText = key;
+      document.getElementById("newKeyBox").classList.remove("hidden");
+      document.getElementById("keyLabel").value = "";
+      loadAllData();
+    };
+
+    window.copyNewKey = () => {
+      navigator.clipboard.writeText(lastCreatedKey);
+      alert("Key Copied: " + lastCreatedKey);
+    };
+
+    window.shareWhatsApp = () => {
+      const msg = encodeURIComponent(`*NEXA AI 3D OS — VIP ACCESS KEY*\n\nKey: \`${lastCreatedKey}\`\n\nApp me Settings -> VIP License Key me paste karke sabhi AI OS features unlock karein.`);
+      window.open(`https://wa.me/?text=${msg}`, "_blank");
+    };
+
+    window.unlinkDevice = async (key) => {
+      if (!confirm("Is Key se purana phone unlink karna hai?")) return;
+      await updateDoc(doc(db, "license_keys", key), { boundDeviceId: "", boundDeviceModel: "" });
+      loadAllData();
+    };
+
+    window.toggleKeyBan = async (key, currentBan) => {
+      await updateDoc(doc(db, "license_keys", key), { isBanned: !currentBan, isActive: currentBan });
+      loadAllData();
+    };
+
+    window.deleteKey = async (key) => {
+      if (!confirm("Key permanently delete karni hai?")) return;
+      await deleteDoc(doc(db, "license_keys", key));
+      loadAllData();
+    };
+
+    window.toggleUserBan = async (uid, currentBan) => {
+      await updateDoc(doc(db, "users", uid), { isBanned: !currentBan });
+      loadAllData();
+    };
+
+    window.switchTab = (tab) => {
+      if (tab === "keys") {
+        document.getElementById("keysSection").classList.remove("hidden");
+        document.getElementById("usersSection").classList.add("hidden");
+        document.getElementById("tabKeysBtn").className = "btn-3d btn-3d-cyan px-5 py-3 text-xs";
+        document.getElementById("tabUsersBtn").className = "btn-3d btn-3d-dark px-5 py-3 text-xs";
+      } else {
+        document.getElementById("usersSection").classList.remove("hidden");
+        document.getElementById("keysSection").classList.add("hidden");
+        document.getElementById("tabUsersBtn").className = "btn-3d btn-3d-cyan px-5 py-3 text-xs";
+        document.getElementById("tabKeysBtn").className = "btn-3d btn-3d-dark px-5 py-3 text-xs";
+      }
+    };
+
+    window.loadAllData = async () => {
+      const keysSnap = await getDocs(collection(db, "license_keys"));
+      const usersSnap = await getDocs(collection(db, "users"));
+      cachedKeys = [];
+      cachedUsers = [];
+
+      let activeKeys = 0, freeKeys = 0, bannedCount = 0;
+      keysSnap.forEach(d => {
+        const k = d.data();
+        cachedKeys.push(k);
+        const isBound = k.boundDeviceId && k.boundDeviceId.length > 0;
+        if (k.isBanned) bannedCount++;
+        else if (isBound) activeKeys++;
+        else freeKeys++;
+      });
+
+      usersSnap.forEach(d => {
+        const u = d.data();
+        cachedUsers.push(u);
+        if (u.isBanned) bannedCount++;
+      });
+
+      document.getElementById("statUsers").innerText = cachedUsers.length;
+      document.getElementById("statActiveKeys").innerText = activeKeys;
+      document.getElementById("statFreeKeys").innerText = freeKeys;
+      document.getElementById("statBanned").innerText = bannedCount;
+      renderFiltered();
+    };
+
+    window.renderFiltered = () => {
+      const q = (document.getElementById("searchInput").value || "").toLowerCase();
+
+      const keysHtml = cachedKeys
+        .filter(k => JSON.stringify(k).toLowerCase().includes(q))
+        .map(k => {
+          const isBound = k.boundDeviceId && k.boundDeviceId.length > 0;
+          const expText = !k.expiresAt || k.expiresAt === 0 ? "LIFETIME" : new Date(k.expiresAt).toLocaleDateString();
+          const badge = k.isBanned
+            ? `<span class="px-2.5 py-0.5 rounded-lg bg-rose-500/20 border border-rose-400/40 text-rose-300 font-cyber text-[10px]">BANNED</span>`
+            : isBound
+              ? `<span class="px-2.5 py-0.5 rounded-lg bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 font-cyber text-[10px]">LOCKED ON PHONE</span>`
+              : `<span class="px-2.5 py-0.5 rounded-lg bg-cyan-500/20 border border-cyan-400/40 text-cyan-300 font-cyber text-[10px]">AVAILABLE</span>`;
+
+          return `
+            <div class="card-5d p-5 flex flex-wrap items-center justify-between gap-4">
+              <div class="space-y-1.5">
+                <div class="flex flex-wrap items-center gap-2.5">
+                  <span class="font-mono font-bold text-white text-lg tracking-wider">${k.key}</span>
+                  ${badge}
+                </div>
+                <p class="text-sm text-slate-300">Client: <b class="text-white">${k.label || "-"}</b> • Validity: <b class="text-cyan-300">${expText}</b></p>
+                ${isBound ? `<p class="text-xs text-emerald-300">User: <b>${k.boundUserName || "-"}</b> • Phone: <b>${k.boundUserPhone || "N/A"}</b> • ${k.boundUserEmail || ""} • Device: ${k.boundDeviceModel || k.boundDeviceId}</p>` : ""}
+              </div>
+              <div class="flex flex-wrap gap-2.5">
+                <button onclick="playClick(); navigator.clipboard.writeText('${k.key}'); alert('Copied!')" class="btn-3d btn-3d-dark px-3.5 py-2 text-[11px]">COPY</button>
+                ${isBound ? `<button onclick="playClick(); unlinkDevice('${k.key}')" class="btn-3d btn-3d-cyan px-3.5 py-2 text-[11px]">UNLINK PHONE</button>` : ""}
+                <button onclick="playClick(); toggleKeyBan('${k.key}', ${!!k.isBanned})" class="btn-3d btn-3d-rose px-3.5 py-2 text-[11px]">${k.isBanned ? "UNBAN" : "BAN"}</button>
+                <button onclick="playClick(); deleteKey('${k.key}')" class="btn-3d btn-3d-dark px-3.5 py-2 text-[11px] text-rose-400">DEL</button>
+              </div>
+            </div>
+          `;
+        });
+
+      const usersHtml = cachedUsers
+        .filter(u => JSON.stringify(u).toLowerCase().includes(q))
+        .map(u => {
+          const cleanPhone = (u.phone || "").replace(/[^0-9]/g, "");
+          return `
+            <div class="card-5d p-5 flex flex-wrap items-center justify-between gap-4">
+              <div class="space-y-1.5">
+                <div class="flex items-center gap-2.5">
+                  <span class="font-bold text-lg text-white">${u.name || "Unnamed User"}</span>
+                  ${u.isBanned
+                    ? `<span class="px-2.5 py-0.5 rounded-lg bg-rose-500/20 border border-rose-400/40 text-rose-300 font-cyber text-[10px]">BANNED</span>`
+                    : `<span class="px-2.5 py-0.5 rounded-lg bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 font-cyber text-[10px]">VERIFIED</span>`}
+                </div>
+                <p class="text-sm text-cyan-300">Phone: <b class="text-white">${u.phone || "Not Added"}</b> • Email: <b class="text-white">${u.email || "-"}</b></p>
+                <p class="text-xs text-slate-400">Device: ${u.deviceModel || "-"} • Key: <span class="font-mono text-amber-300">${u.vipKey || "FREE PLAN"}</span></p>
+              </div>
+              <div class="flex gap-2.5">
+                ${cleanPhone ? `<a onclick="playClick()" href="https://wa.me/${cleanPhone}" target="_blank" class="btn-3d btn-3d-emerald px-4 py-2 text-[11px]">WHATSAPP</a>` : ""}
+                <button onclick="playClick(); toggleUserBan('${u.uid}', ${!!u.isBanned})" class="btn-3d btn-3d-rose px-4 py-2 text-[11px]">${u.isBanned ? "UNBAN USER" : "BAN USER"}</button>
+              </div>
+            </div>
+          `;
+        });
+
+      document.getElementById("keysSection").innerHTML = keysHtml.length ? keysHtml.join("") : `<div class="card-5d p-6 text-center text-slate-400">No VIP keys forged yet.</div>`;
+      document.getElementById("usersSection").innerHTML = usersHtml.length ? usersHtml.join("") : `<div class="card-5d p-6 text-center text-slate-400">No app users registered yet.</div>`;
+    };
+  </script>
+</body>
+</html>
