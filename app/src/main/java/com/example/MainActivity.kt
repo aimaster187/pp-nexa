@@ -256,7 +256,7 @@ fun NexaMainWorkspace(
         override fun onResults(results: Bundle?) {
           val matches = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
           val spoken = matches?.firstOrNull().orEmpty()
-          if (spoken.isNotBlank() && !isOrbMuted) {
+          if (spoken.trim().split(" ").size >= 2 && spoken.length >= 5 && !isOrbMuted) {
             viewModel.sendCommand(spoken)
           }
           if (continuousVoiceLocked && !isOrbMuted) startListeningLoop()
