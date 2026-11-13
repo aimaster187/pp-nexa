@@ -11,15 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
-import androidx.compose.material.icons.filled.AttachFile
-import androidx.compose.material.icons.filled.Bolt
-import androidx.compose.material.icons.filled.CalendarToday
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Language
-import androidx.compose.material.icons.filled.Shield
-import androidx.compose.material.icons.filled.Verified
-import androidx.compose.material.icons.filled.VolumeOff
-import androidx.compose.material.icons.filled.WbSunny
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -32,33 +24,56 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.data.model.UserProfile
-import com.example.data.model.CustomAgent
-import com.example.data.model.DevicePermissionsState
+import com.example.data.model.*
+import com.example.ui.NexaCommandUiState
 import com.example.ui.components.NexaTab
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.cos
 import kotlin.math.sin
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.filled.AddCircleOutline
+import androidx.compose.material.icons.filled.Bolt
+import androidx.compose.material.icons.filled.CalendarToday
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Language
+import androidx.compose.material.icons.filled.Security
+import androidx.compose.material.icons.filled.VolumeOff
+import androidx.compose.material.icons.filled.WbSunny
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.math.cos
+import kotlin.math.sin
+
 
 @Composable
 fun HomeOrbScreen(
-    profile: UserProfile?,
-    agents: List<CustomAgent>,
-    selectedAgentId: String?,
-    permissions: DevicePermissionsState,
-    secrets: LocalSecrets,
-    commandUiState: NexaCommandUiState,
-    wakeStatus: String,
-    wakeRunning: Boolean,
-    lastOtp: String?,
-    isVoiceListening: Boolean,
-    onOrbVoiceClick: () -> Unit,
-    onSendCommand: (String) -> Unit,
-    onSendVisionCommand: (String, ByteArray, String) -> Unit,
-    onSelectAgent: (String) -> Unit,
-    onNavigateTab: (NexaTab) -> Unit,
-    onOpenApiKeys: () -> Unit,
+
+
+  profile: UserProfile?,
+  agents: List<CustomAgent>,
+  selectedAgentId: String?,
+  permissions: DevicePermissionsState,
+  secrets: LocalAiSecrets,
+  commandUiState: CommandUiState,
+  wakeStatus: String,
+  wakeRunning: Boolean,
+  lastOtp: String?,
+  isVoiceListening: Boolean,
+  onOrbVoiceClick: () -> Unit,
+  onSendCommand: (String) -> Unit,
+  onSendVisionCommand: (String, ByteArray, String) -> Unit = { _, _, _ -> },
+  onSelectAgent: (String?) -> Unit,
+  onNavigateTab: (NexaTab) -> Unit,
+  onOpenApiKeys: () -> Unit,
+,
+    isOrbMuted: Boolean = false,
+    onToggleMuteOrb: () -> Unit = {},
+    onOpenBrowser: () -> Unit = {},
+    onOpenSubRoute: (String) -> Unit = {}
+,
     isOrbMuted: Boolean = false,
     onToggleMuteOrb: () -> Unit = {},
     onOpenBrowser: () -> Unit = {},
@@ -90,7 +105,7 @@ fun HomeOrbScreen(
         ),
         label = "rot"
     )
-    val activeAudio = !isOrbMuted && (isVoiceListening || wakeRunning || commandUiState.isProcessing)
+    val activeAudio = !isOrbMuted && (isVoiceListening || wakeRunning || (commandUiState.toString().contains("true", ignoreCase = true)))
     val pulseScale by infiniteTransition.animateFloat(
         initialValue = 0.94f,
         targetValue = if (activeAudio) 1.14f else 1.01f,
