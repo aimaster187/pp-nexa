@@ -11,7 +11,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.AttachFile
+import androidx.compose.material.icons.filled.Bolt
+import androidx.compose.material.icons.filled.CalendarToday
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Language
+import androidx.compose.material.icons.filled.Shield
+import androidx.compose.material.icons.filled.Verified
+import androidx.compose.material.icons.filled.VolumeOff
+import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -34,24 +42,22 @@ import kotlin.math.sin
 
 @Composable
 fun HomeOrbScreen(
-
-  profile: UserProfile?,
-  agents: List<CustomAgent>,
-  selectedAgentId: String?,
-  permissions: DevicePermissionsState,
-  secrets: LocalAiSecrets,
-  commandUiState: CommandUiState,
-  wakeStatus: String,
-  wakeRunning: Boolean,
-  lastOtp: String?,
-  isVoiceListening: Boolean,
-  onOrbVoiceClick: () -> Unit,
-  onSendCommand: (String) -> Unit,
-  onSendVisionCommand: (String, ByteArray, String) -> Unit = { _, _, _ -> },
-  onSelectAgent: (String?) -> Unit,
-  onNavigateTab: (NexaTab) -> Unit,
-  onOpenApiKeys: () -> Unit,
-,
+    profile: UserProfile?,
+    agents: List<CustomAgent>,
+    selectedAgentId: String?,
+    permissions: DevicePermissionsState,
+    secrets: LocalSecrets,
+    commandUiState: NexaCommandUiState,
+    wakeStatus: String,
+    wakeRunning: Boolean,
+    lastOtp: String?,
+    isVoiceListening: Boolean,
+    onOrbVoiceClick: () -> Unit,
+    onSendCommand: (String) -> Unit,
+    onSendVisionCommand: (String, ByteArray, String) -> Unit,
+    onSelectAgent: (String) -> Unit,
+    onNavigateTab: (NexaTab) -> Unit,
+    onOpenApiKeys: () -> Unit,
     isOrbMuted: Boolean = false,
     onToggleMuteOrb: () -> Unit = {},
     onOpenBrowser: () -> Unit = {},
@@ -140,7 +146,6 @@ fun HomeOrbScreen(
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        // BIG CENTER HOLOGRAM ORB -> TAP TO MUTE / UNMUTE
         Box(
             modifier = Modifier
                 .size(240.dp)
@@ -268,7 +273,6 @@ fun HomeOrbScreen(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Quick Module Row: Browser, License/Update, Rules
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(10.dp)
@@ -316,7 +320,6 @@ fun HomeOrbScreen(
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        // 3 Info Cards: Mausam, Aaj, Mood
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(10.dp)
@@ -378,7 +381,6 @@ fun HomeOrbScreen(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Prompt Input Bar
         Surface(
             shape = RoundedCornerShape(28.dp),
             color = cardColor,
