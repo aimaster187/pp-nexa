@@ -413,6 +413,7 @@ fun NexaMainWorkspace(
           }
         },
         bottomBar = {
+      if (!showZedBrowser) {
           NexaFloatingBottomBar(
             selectedTab = selectedTab,
             isListening = (continuousVoiceLocked && !isOrbMuted) || showVoiceTriggerDialog || wakeRunning,
@@ -426,7 +427,9 @@ fun NexaMainWorkspace(
               }
             },
           )
-        },
+        
+      }
+    },
       ) { innerPadding ->
         Box(modifier = Modifier.fillMaxSize().padding(top = innerPadding.calculateTopPadding())) {
           when (selectedTab) {
@@ -518,7 +521,7 @@ fun NexaMainWorkspace(
                 ZedSubRouteScreen(
                   route = activeSubRoute!!,
                   onBack = { activeSubRoute = null },
-                  onOpenBrowserUrl = { url ->
+                  onOpenBrowserWithUrl = { url ->
                     browserStartUrl = url
                     activeSubRoute = null
                     showZedBrowser = true
