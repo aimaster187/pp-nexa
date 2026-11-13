@@ -32,9 +32,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.data.model.*
-import com.example.ui.NexaCommandUiState
-import com.example.ai.LocalSecrets
+import com.example.data.model.UserProfile
+import com.example.data.model.CustomAgent
+import com.example.data.model.DevicePermissionsState
 import com.example.ui.components.NexaTab
 import java.text.SimpleDateFormat
 import java.util.*
@@ -299,7 +299,7 @@ fun HomeOrbScreen(
                 modifier = Modifier.weight(1f).height(46.dp)
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
-                    Icon(Icons.Default.Verified, contentDescription = null, tint = Color(0xFF2563EB), modifier = Modifier.size(17.dp))
+                    Icon(Icons.Default.CheckCircle, contentDescription = null, tint = Color(0xFF2563EB), modifier = Modifier.size(17.dp))
                     Spacer(modifier = Modifier.width(6.dp))
                     Text("License", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = textDark)
                 }
@@ -312,7 +312,7 @@ fun HomeOrbScreen(
                 modifier = Modifier.weight(1f).height(46.dp)
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
-                    Icon(Icons.Default.Shield, contentDescription = null, tint = Color(0xFF2563EB), modifier = Modifier.size(17.dp))
+                    Icon(Icons.Default.Security, contentDescription = null, tint = Color(0xFF2563EB), modifier = Modifier.size(17.dp))
                     Spacer(modifier = Modifier.width(6.dp))
                     Text("Rules", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = textDark)
                 }
@@ -392,7 +392,7 @@ fun HomeOrbScreen(
                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(Icons.Default.AttachFile, contentDescription = null, tint = textSub, modifier = Modifier.size(20.dp))
+                Icon(Icons.Default.AddCircleOutline, contentDescription = null, tint = textSub, modifier = Modifier.size(20.dp))
                 TextField(
                     value = promptText,
                     onValueChange = { promptText = it },

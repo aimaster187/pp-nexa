@@ -85,7 +85,7 @@ fun ZedSubRouteScreen(
             "upgrade" -> {
                 Surface(shape = RoundedCornerShape(28.dp), color = cardColor, shadowElevation = 10.dp, modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                        Icon(Icons.Default.Favorite, contentDescription = null, tint = Color(0xFF3B82F6), modifier = Modifier.size(44.dp))
+                        Icon(Icons.Default.Star, contentDescription = null, tint = Color(0xFF3B82F6), modifier = Modifier.size(44.dp))
                         Spacer(modifier = Modifier.height(12.dp))
                         Text("ZED Pro Max active hai", fontSize = 20.sp, fontWeight = FontWeight.Medium, color = textDark)
                         Spacer(modifier = Modifier.height(8.dp))
