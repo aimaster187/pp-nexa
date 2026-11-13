@@ -17,8 +17,8 @@ android {
     applicationId = "com.aistudio.nexaai.kxmpqz"
     minSdk = 24
     targetSdk = 36
-    versionCode = 5
-    versionName = "3.4.0"
+    versionCode = 6
+    versionName = "3.5.0"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }

@@ -88,6 +88,16 @@ import com.example.ui.screens.PhoneControlConsoleScreen
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.runtime.collectAsState
 import com.example.system.NexaLicenseManager
+import android.speech.RecognitionListener
+import android.speech.RecognizerIntent
+import android.speech.SpeechRecognizer
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material3.Icon
+import androidx.compose.ui.unit.sp
+import com.example.ui.screens.ZedBrowserScreen
+import com.example.ui.screens.ZedSubRouteScreen
+
 import androidx.compose.ui.Alignment
 import com.example.ui.theme.NexaAiTheme
 import com.example.ui.theme.NexaBlueCore
@@ -119,7 +129,7 @@ class MainActivity : ComponentActivity() {
     handleWakeWordIntent(intent)
 
     setContent {
-      NexaAiTheme(darkTheme = true) {
+      NexaAiTheme(darkTheme = false) {
         NexaRootNavigation()
       }
     }
@@ -208,6 +218,54 @@ fun NexaMainWorkspace(
   val transcriptionState by viewModel.transcriptionState.collectAsStateWithLifecycle()
   val transcriptionHistory by viewModel.transcriptionHistory.collectAsStateWithLifecycle()
 
+  var isOrbMuted by remember { mutableStateOf(false) }
+  var continuousVoiceLocked by remember { mutableStateOf(false) }
+  var showZedBrowser by remember { mutableStateOf(false) }
+  var browserStartUrl by remember { mutableStateOf("https://www.google.com") }
+  var activeSubRoute by remember { mutableStateOf<String?>(null) }
+
+  // Real Android SpeechRecognizer Continuous Hands-Free Listener
+  DisposableEffect(continuousVoiceLocked, isOrbMuted) {
+    var recognizer: SpeechRecognizer? = null
+    if (continuousVoiceLocked && !isOrbMuted && SpeechRecognizer.isRecognitionAvailable(context)) {
+      recognizer = SpeechRecognizer.createSpeechRecognizer(context)
+      val recIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+        putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+        putExtra(RecognizerIntent.EXTRA_LANGUAGE, "hi-IN")
+        putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
+      }
+      fun startListeningLoop() {
+        try {
+          if (continuousVoiceLocked && !isOrbMuted) recognizer?.startListening(recIntent)
+        } catch (_: Exception) {}
+      }
+      recognizer.setRecognitionListener(object : RecognitionListener {
+        override fun onReadyForSpeech(params: Bundle?) {}
+        override fun onBeginningOfSpeech() {}
+        override fun onRmsChanged(rmsdB: Float) {}
+        override fun onBufferReceived(buffer: ByteArray?) {}
+        override fun onEndOfSpeech() {}
+        override fun onError(error: Int) {
+          if (continuousVoiceLocked && !isOrbMuted) startListeningLoop()
+        }
+        override fun onResults(results: Bundle?) {
+          val matches = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
+          val spoken = matches?.firstOrNull().orEmpty()
+          if (spoken.isNotBlank() && !isOrbMuted) {
+            viewModel.sendCommand(spoken)
+          }
+          if (continuousVoiceLocked && !isOrbMuted) startListeningLoop()
+        }
+        override fun onPartialResults(partialResults: Bundle?) {}
+        override fun onEvent(eventType: Int, params: Bundle?) {}
+      })
+      startListeningLoop()
+    }
+    onDispose {
+      try { recognizer?.destroy() } catch (_: Exception) {}
+    }
+  }
+
   var selectedTab by remember { mutableStateOf(NexaTab.HOME) }
   var showApiKeysSheet by remember { mutableStateOf(false) }
   var showNotificationsDialog by remember { mutableStateOf(false) }
@@ -271,7 +329,7 @@ fun NexaMainWorkspace(
     BackHandler { selectedTab = NexaTab.HOME }
   }
 
-  val darkTheme = isSystemInDarkTheme()
+  val darkTheme = false
   val bgColors =
     if (darkTheme) listOf(NexaDarkBgTop, NexaDarkBgBottom)
     else listOf(NexaFrostBgTop, NexaFrostBgMid, NexaFrostBgBottom)
@@ -352,9 +410,16 @@ fun NexaMainWorkspace(
         bottomBar = {
           NexaFloatingBottomBar(
             selectedTab = selectedTab,
-            isListening = showVoiceTriggerDialog || wakeRunning,
+            isListening = (continuousVoiceLocked && !isOrbMuted) || showVoiceTriggerDialog || wakeRunning,
             onSelectTab = { selectedTab = it },
-            onMicClick = { launchVoicePrompt() },
+            onMicClick = {
+              val hasMic = ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
+              if (hasMic) {
+                continuousVoiceLocked = !continuousVoiceLocked
+              } else {
+                micPermissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+              }
+            },
           )
         },
       ) { innerPadding ->
@@ -398,26 +463,92 @@ fun NexaMainWorkspace(
                   )
                 }
               }
-              HomeOrbScreen(
-                profile = profile,
-                agents = agents,
-                selectedAgentId = selectedAgentId,
-                permissions = permissions,
-                secrets = secrets,
-                commandUiState = commandUiState,
-                wakeStatus = wakeStatus,
-                wakeRunning = wakeRunning,
-                lastOtp = lastOtp,
-                isVoiceListening = showVoiceTriggerDialog,
-                onOrbVoiceClick = { launchVoicePrompt() },
-                onSendCommand = { viewModel.sendCommand(it) },
-                onSendVisionCommand = { prompt, bytes, mime ->
-                  viewModel.sendCommand(prompt, imageBytes = bytes, imageMimeType = mime)
-                },
-                onSelectAgent = { viewModel.selectAgent(it) },
-                onNavigateTab = { selectedTab = it },
-                onOpenApiKeys = { showApiKeysSheet = true },
-              )
+              if (!licState.isVipUnlocked) {
+                var gateKeyInput by remember { mutableStateOf(licState.activeKey) }
+                Box(
+                  modifier = Modifier.fillMaxSize().background(Color(0xFFE8EFFA)).padding(24.dp),
+                  contentAlignment = Alignment.Center
+                ) {
+                  Surface(
+                    shape = RoundedCornerShape(28.dp),
+                    color = Color(0xFFF4F8FF),
+                    shadowElevation = 14.dp,
+                    modifier = Modifier.fillMaxWidth()
+                  ) {
+                    Column(modifier = Modifier.padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                      Icon(Icons.Default.Lock, contentDescription = null, tint = Color(0xFF2563EB), modifier = Modifier.padding(bottom = 10.dp))
+                      Text("ZED AI VIP LOCKED", fontSize = 22.sp, fontWeight = FontWeight.Bold, color = Color(0xFF1E293B))
+                      Text("by The Titan AI", fontSize = 12.sp, color = Color(0xFF2563EB), fontWeight = FontWeight.SemiBold)
+                      Text(
+                        "Is app ko use karne ke liye Admin Panel se generate ki gayi VIP License Key dalein.",
+                        fontSize = 13.sp,
+                        color = Color(0xFF64748B),
+                        modifier = Modifier.padding(vertical = 12.dp)
+                      )
+                      OutlinedTextField(
+                        value = gateKeyInput,
+                        onValueChange = { gateKeyInput = it },
+                        label = { Text("Enter ZED-VIP-XXXX-XXXX Key") },
+                        singleLine = true,
+                        shape = RoundedCornerShape(16.dp),
+                        modifier = Modifier.fillMaxWidth()
+                      )
+                      Button(
+                        onClick = { scope.launch { NexaLicenseManager.activateKey(context, gateKeyInput) } },
+                        enabled = !licState.isLoading,
+                        shape = RoundedCornerShape(16.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2563EB)),
+                        modifier = Modifier.fillMaxWidth().padding(top = 14.dp)
+                      ) {
+                        Text(if (licState.isLoading) "Verifying..." else "UNLOCK ZED AI", color = Color.White, fontWeight = FontWeight.Bold)
+                      }
+                      if (licState.statusMessage.isNotBlank()) {
+                        Text(licState.statusMessage, color = Color(0xFFE11D48), fontSize = 12.sp, modifier = Modifier.padding(top = 8.dp))
+                      }
+                    }
+                  }
+                }
+              } else if (activeSubRoute != null) {
+                ZedSubRouteScreen(
+                  route = activeSubRoute!!,
+                  onBack = { activeSubRoute = null },
+                  onOpenBrowserUrl = { url ->
+                    browserStartUrl = url
+                    activeSubRoute = null
+                    showZedBrowser = true
+                  }
+                )
+              } else if (showZedBrowser) {
+                ZedBrowserScreen(
+                  initialUrl = browserStartUrl,
+                  onClose = { showZedBrowser = false }
+                )
+              } else {
+                HomeOrbScreen(
+                  profile = profile,
+                  agents = agents,
+                  selectedAgentId = selectedAgentId,
+                  permissions = permissions,
+                  secrets = secrets,
+                  commandUiState = commandUiState,
+                  wakeStatus = wakeStatus,
+                  wakeRunning = wakeRunning,
+                  lastOtp = lastOtp,
+                  isVoiceListening = (continuousVoiceLocked && !isOrbMuted) || showVoiceTriggerDialog,
+                  onOrbVoiceClick = { isOrbMuted = !isOrbMuted },
+                  onSendCommand = { viewModel.sendCommand(it) },
+                  onSendVisionCommand = { prompt, bytes, mime ->
+                    viewModel.sendCommand(prompt, imageBytes = bytes, imageMimeType = mime)
+                  },
+                  onSelectAgent = { viewModel.selectAgent(it) },
+                  onNavigateTab = { selectedTab = it },
+                  onOpenApiKeys = { showApiKeysSheet = true },
+                  isOrbMuted = isOrbMuted,
+                  onToggleMuteOrb = { isOrbMuted = !isOrbMuted },
+                  onOpenBrowser = { showZedBrowser = true },
+                  onOpenSubRoute = { activeSubRoute = it },
+                )
+              }
             }
             NexaTab.AGENTS -> {
               AgentsControlScreen(

@@ -1,98 +1,40 @@
 package com.example.ui.screens
 
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
-import android.net.Uri
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.PickVisualMediaRequest
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.BorderStroke
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.Send
-import androidx.compose.material.icons.rounded.AddPhotoAlternate
-import androidx.compose.material.icons.rounded.Alarm
-import androidx.compose.material.icons.rounded.AutoAwesome
-import androidx.compose.material.icons.rounded.Bolt
-import androidx.compose.material.icons.rounded.CalendarToday
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.Favorite
-import androidx.compose.material.icons.rounded.GraphicEq
-import androidx.compose.material.icons.rounded.Key
-import androidx.compose.material.icons.rounded.MarkEmailRead
-import androidx.compose.material.icons.rounded.MusicNote
-import androidx.compose.material.icons.rounded.Public
-import androidx.compose.material.icons.rounded.Security
-import androidx.compose.material.icons.rounded.SmartToy
-import androidx.compose.material.icons.rounded.WbSunny
-import androidx.compose.material.icons.rounded.Wifi
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.data.model.AiProviderType
-import com.example.data.model.CustomAgent
-import com.example.data.model.DevicePermissionsState
-import com.example.data.model.LocalAiSecrets
-import com.example.data.model.UserProfile
-import com.example.ui.CommandUiState
-import com.example.ui.components.NeuralCoreOrb3D
-import com.example.ui.components.NexaGlassCard
+import com.example.data.model.*
+import com.example.ui.NexaCommandUiState
 import com.example.ui.components.NexaTab
-import com.example.ui.theme.NexaBlueCore
-import com.example.ui.theme.NexaEmeraldOk
-import com.example.ui.theme.NexaGoldNode
-import com.example.ui.theme.NexaRoseRadar
 import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Date
-import java.util.Locale
+import java.util.*
+import kotlin.math.cos
+import kotlin.math.sin
 
 @Composable
 fun HomeOrbScreen(
+
   profile: UserProfile?,
   agents: List<CustomAgent>,
   selectedAgentId: String?,
@@ -109,593 +51,377 @@ fun HomeOrbScreen(
   onSelectAgent: (String?) -> Unit,
   onNavigateTab: (NexaTab) -> Unit,
   onOpenApiKeys: () -> Unit,
+,
+    isOrbMuted: Boolean = false,
+    onToggleMuteOrb: () -> Unit = {},
+    onOpenBrowser: () -> Unit = {},
+    onOpenSubRoute: (String) -> Unit = {}
 ) {
-  val context = LocalContext.current
-  var commandInput by remember { mutableStateOf("") }
-  var attachedImageBytes by remember { mutableStateOf<ByteArray?>(null) }
-  var attachedImageMime by remember { mutableStateOf("image/jpeg") }
-  var otpCopiedHint by remember { mutableStateOf(false) }
+    var promptText by remember { mutableStateOf("") }
+    val scrollState = rememberScrollState()
+    val bossName = profile?.bossName?.ifBlank { "BOSS" } ?: "BOSS"
+    val energyPoints = profile?.energyPoints ?: 4
+    val moodStatus = profile?.moodStatus?.ifBlank { "Sab badhiya" } ?: "Sab badhiya"
 
-  val photoPickerLauncher =
-    rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri: Uri? ->
-      if (uri != null) {
-        val bytes =
-          runCatching { context.contentResolver.openInputStream(uri)?.use { it.readBytes() } }
-            .getOrNull()
-        if (bytes != null && bytes.isNotEmpty()) {
-          attachedImageBytes = bytes
-          attachedImageMime = context.contentResolver.getType(uri) ?: "image/jpeg"
-        }
-      }
-    }
-
-  fun submitCurrentInput() {
-    val img = attachedImageBytes
-    if (img != null && img.isNotEmpty()) {
-      onSendVisionCommand(commandInput, img, attachedImageMime)
-      attachedImageBytes = null
-      commandInput = ""
-    } else if (commandInput.isNotBlank()) {
-      onSendCommand(commandInput)
-      commandInput = ""
-    }
-  }
-
-  val scrollState = rememberScrollState()
-  val bossName = profile?.bossName?.ifBlank { "BOSS" } ?: "BOSS"
-  val energy = profile?.energyPoints ?: 100L
-  val greeting =
-    remember {
-      val hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
-      when {
-        hour < 12 -> "Good morning,"
-        hour < 17 -> "Good afternoon,"
-        hour < 21 -> "Good evening,"
+    val hour = remember { Calendar.getInstance().get(Calendar.HOUR_OF_DAY) }
+    val greeting = when (hour) {
+        in 5..11 -> "Good morning,"
+        in 12..16 -> "Good afternoon,"
+        in 17..20 -> "Good evening,"
         else -> "Good night,"
-      }
     }
-  val dayNum = remember { SimpleDateFormat("dd", Locale.getDefault()).format(Date()) }
-  val daySub = remember { SimpleDateFormat("EEE, MMM", Locale.getDefault()).format(Date()) }
-  val activeProvider = AiProviderType.fromId(secrets.activeProvider)
-  val selectedAgent = agents.firstOrNull { it.id == selectedAgentId }
+    val dayNum = remember { SimpleDateFormat("dd", Locale.getDefault()).format(Date()) }
+    val dayMonth = remember { SimpleDateFormat("EEE, MMM", Locale.getDefault()).format(Date()) }
 
-  Column(
-    modifier =
-      Modifier
-        .fillMaxSize()
-        .verticalScroll(scrollState)
-        .padding(horizontal = 18.dp),
-    horizontalAlignment = Alignment.CenterHorizontally,
-  ) {
-    Column(modifier = Modifier.widthIn(max = 580.dp).fillMaxWidth()) {
-      // Greeting + Energy Pill Row (matching screenshot header)
-      Row(
-        modifier = Modifier.fillMaxWidth().padding(top = 2.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.Top,
-      ) {
-        Column {
-          Text(
-            text = greeting,
-            style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-          )
-          Text(
-            text = bossName,
-            style = MaterialTheme.typography.displaySmall,
-            color = MaterialTheme.colorScheme.onBackground,
-            fontWeight = FontWeight.Bold,
-          )
-        }
-
-        Surface(
-          shape = RoundedCornerShape(18.dp),
-          color = MaterialTheme.colorScheme.surface.copy(alpha = 0.94f),
-          shadowElevation = 10.dp,
-          border = BorderStroke(1.2.dp, Color.White.copy(alpha = 0.86f)),
-          modifier = Modifier.clickable(onClick = onOpenApiKeys).testTag("energy_provider_pill"),
-        ) {
-          Row(
-            modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
-            verticalAlignment = Alignment.CenterVertically,
-          ) {
-            Icon(
-              imageVector = Icons.Rounded.Bolt,
-              contentDescription = "Active AI Energy",
-              tint = NexaGoldNode,
-              modifier = Modifier.size(18.dp),
-            )
-            Spacer(modifier = Modifier.width(6.dp))
-            Column {
-              Text(
-                text = "$energy",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-              )
-              Text(
-                text = activeProvider.displayName.substringBefore(" "),
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-              )
-            }
-          }
-        }
-      }
-
-      Spacer(modifier = Modifier.height(4.dp))
-
-      // 3D Neural Orb Centerpiece
-      Box(
-        modifier = Modifier.fillMaxWidth(),
-        contentAlignment = Alignment.Center,
-      ) {
-        NeuralCoreOrb3D(
-          isListening = isVoiceListening || wakeRunning,
-          isBusy = commandUiState is CommandUiState.Thinking,
-          accessibilityActive = permissions.accessibilityEnabled && secrets.accessibilityAgentControlEnabled,
-          orbSize = 266.dp,
-          onOrbTapped = onOrbVoiceClick,
-        )
-      }
-
-      // Live Telemetry Status Pill below Orb
-      Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-        Surface(
-          shape = RoundedCornerShape(20.dp),
-          color = MaterialTheme.colorScheme.surface.copy(alpha = 0.88f),
-          border = BorderStroke(1.dp, Color.White.copy(alpha = 0.80f)),
-          shadowElevation = 4.dp,
-        ) {
-          Row(
-            modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp),
-            verticalAlignment = Alignment.CenterVertically,
-          ) {
-            val dotColor =
-              when {
-                commandUiState is CommandUiState.Thinking -> NexaBlueCore
-                isVoiceListening || wakeRunning -> NexaRoseRadar
-                permissions.accessibilityEnabled && secrets.accessibilityAgentControlEnabled -> NexaEmeraldOk
-                else -> NexaGoldNode
-              }
-            Box(
-              modifier = Modifier.size(8.dp).clip(CircleShape).background(dotColor)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-              text =
-                when (commandUiState) {
-                  is CommandUiState.Thinking -> commandUiState.label
-                  else -> if (wakeRunning) wakeStatus else "Tap 3D Core or say 'Hey Zed'"
-                },
-              style = MaterialTheme.typography.labelSmall,
-              color = MaterialTheme.colorScheme.onSurface,
-              maxLines = 1,
-              overflow = TextOverflow.Ellipsis,
-            )
-          }
-        }
-      }
-
-      Spacer(modifier = Modifier.height(14.dp))
-
-      // Quick Action Pills Row (matching screenshot's 3-pill frosted strip + API Keys)
-      Row(
-        modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
-      ) {
-        QuickPillChip(
-          icon = Icons.Rounded.SmartToy,
-          label = "Agents (${agents.count { it.isEnabled }})",
-          tint = NexaBlueCore,
-          onClick = { onNavigateTab(NexaTab.AGENTS) },
-        )
-        QuickPillChip(
-          icon = Icons.Rounded.GraphicEq,
-          label = "Transcribe",
-          tint = NexaRoseRadar,
-          onClick = { onNavigateTab(NexaTab.TRANSCRIBE) },
-        )
-        QuickPillChip(
-          icon = Icons.Rounded.MarkEmailRead,
-          label = "Auto-Reply",
-          tint = NexaBlueCore,
-          onClick = { onNavigateTab(NexaTab.AGENTS) },
-        )
-        QuickPillChip(
-          icon = Icons.Rounded.Security,
-          label = "Phone Ctrl",
-          tint = NexaBlueCore,
-          onClick = { onNavigateTab(NexaTab.CONTROL) },
-        )
-        QuickPillChip(
-          icon = Icons.Rounded.Key,
-          label = "API Keys",
-          tint = NexaGoldNode,
-          onClick = onOpenApiKeys,
-        )
-        QuickPillChip(
-          icon = Icons.Rounded.Alarm,
-          label = "5m Timer",
-          tint = NexaBlueCore,
-          onClick = { onSendCommand("5 minute ka timer lagao") },
-        )
-        QuickPillChip(
-          icon = Icons.Rounded.MusicNote,
-          label = "Media",
-          tint = NexaEmeraldOk,
-          onClick = { onSendCommand("Media play pause karo") },
-        )
-        QuickPillChip(
-          icon = Icons.Rounded.Wifi,
-          label = "Wi-Fi Panel",
-          tint = NexaBlueCore,
-          onClick = { onSendCommand("Wi-Fi settings panel kholo") },
-        )
-        QuickPillChip(
-          icon = Icons.Rounded.Public,
-          label = "Web Search",
-          tint = NexaGoldNode,
-          onClick = { onSendCommand("Google par latest AI news search karo") },
-        )
-      }
-
-      Spacer(modifier = Modifier.height(14.dp))
-
-      // 3 Bento Status Cards (Mausam / Aaj / Mood style from screenshot)
-      Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
-      ) {
-        NexaGlassCard(
-          modifier = Modifier.weight(1f),
-          onClick = { onNavigateTab(NexaTab.CONTROL) },
-        ) {
-          Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(
-              imageVector = Icons.Rounded.WbSunny,
-              contentDescription = null,
-              tint = MaterialTheme.colorScheme.onSurfaceVariant,
-              modifier = Modifier.size(14.dp),
-            )
-            Spacer(modifier = Modifier.width(4.dp))
-            Text("Control", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-          }
-          Spacer(modifier = Modifier.height(8.dp))
-          val a11yReady = permissions.accessibilityEnabled && secrets.accessibilityAgentControlEnabled
-          Text(
-            text = if (a11yReady) "FULL" else "OFF",
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold,
-            color = if (a11yReady) NexaEmeraldOk else NexaRoseRadar,
-          )
-          Text(
-            text = if (permissions.notificationListenerEnabled) "Auto-Reply ON" else "Setup Needed",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-          )
-        }
-
-        NexaGlassCard(
-          modifier = Modifier.weight(1f),
-          onClick = { onNavigateTab(NexaTab.AGENTS) },
-        ) {
-          Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(
-              imageVector = Icons.Rounded.CalendarToday,
-              contentDescription = null,
-              tint = MaterialTheme.colorScheme.onSurfaceVariant,
-              modifier = Modifier.size(14.dp),
-            )
-            Spacer(modifier = Modifier.width(4.dp))
-            Text("Aaj", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-          }
-          Spacer(modifier = Modifier.height(8.dp))
-          Text(
-            text = dayNum,
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold,
-          )
-          Text(
-            text = "$daySub · ${agents.size} Agents",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-          )
-        }
-
-        NexaGlassCard(
-          modifier = Modifier.weight(1f),
-          onClick = {
-            if (!lastOtp.isNullOrBlank()) {
-              val cm = context.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
-              cm?.setPrimaryClip(ClipData.newPlainText("ZED OTP", lastOtp))
-              otpCopiedHint = true
-            } else {
-              onNavigateTab(NexaTab.CONTROL)
-            }
-          },
-        ) {
-          Box(modifier = Modifier.fillMaxWidth()) {
-            Icon(
-              imageVector = Icons.Rounded.Favorite,
-              contentDescription = null,
-              tint = NexaRoseRadar,
-              modifier =
-                Modifier
-                  .align(Alignment.CenterEnd)
-                  .size(46.dp)
-                  .alpha(0.18f),
-            )
-            Column {
-              Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                  imageVector = Icons.Rounded.Favorite,
-                  contentDescription = null,
-                  tint = NexaRoseRadar,
-                  modifier = Modifier.size(14.dp),
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text("Wake", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-              }
-              Spacer(modifier = Modifier.height(8.dp))
-              Text(
-                text = if (wakeRunning) "LIVE" else "READY",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                color = if (wakeRunning) NexaBlueCore else MaterialTheme.colorScheme.onSurface,
-              )
-              Text(
-                text =
-                  when {
-                    otpCopiedHint -> "OTP Copied!"
-                    !lastOtp.isNullOrBlank() -> "OTP: $lastOtp"
-                    else -> "Hey Zed"
-                  },
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-              )
-            }
-          }
-        }
-      }
-
-      Spacer(modifier = Modifier.height(12.dp))
-
-      // Active Agent Selector Row
-      if (agents.isNotEmpty()) {
-        Row(
-          modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
-          horizontalArrangement = Arrangement.spacedBy(8.dp),
-          verticalAlignment = Alignment.CenterVertically,
-        ) {
-          AgentFilterChip(
-            label = "ZED Core",
-            selected = selectedAgentId == null,
-            onClick = { onSelectAgent(null) },
-          )
-          agents.filter { it.isEnabled }.forEach { agent ->
-            AgentFilterChip(
-              label = agent.name,
-              selected = selectedAgentId == agent.id,
-              onClick = { onSelectAgent(agent.id) },
-            )
-          }
-        }
-        Spacer(modifier = Modifier.height(10.dp))
-      }
-
-      // Latest Execution / Reply Feedback Card
-      when (commandUiState) {
-        is CommandUiState.Thinking -> {
-          NexaGlassCard(modifier = Modifier.fillMaxWidth()) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-              CircularProgressIndicator(modifier = Modifier.size(18.dp), strokeWidth = 2.dp)
-              Spacer(modifier = Modifier.width(12.dp))
-              Text(commandUiState.label, style = MaterialTheme.typography.bodyMedium)
-            }
-          }
-          Spacer(modifier = Modifier.height(10.dp))
-        }
-        is CommandUiState.Success -> {
-          NexaGlassCard(
-            modifier = Modifier.fillMaxWidth(),
-            onClick = { onNavigateTab(NexaTab.CHAT) },
-          ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-              Icon(Icons.Rounded.AutoAwesome, contentDescription = null, tint = NexaBlueCore, modifier = Modifier.size(16.dp))
-              Spacer(modifier = Modifier.width(6.dp))
-              Text(
-                text = selectedAgent?.name ?: "ZED AI",
-                style = MaterialTheme.typography.labelLarge,
-                color = NexaBlueCore,
-              )
-            }
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-              text = commandUiState.message,
-              style = MaterialTheme.typography.bodyMedium,
-              maxLines = 3,
-              overflow = TextOverflow.Ellipsis,
-            )
-          }
-          Spacer(modifier = Modifier.height(10.dp))
-        }
-        is CommandUiState.Error -> {
-          NexaGlassCard(modifier = Modifier.fillMaxWidth()) {
-            Text(
-              text = commandUiState.message,
-              style = MaterialTheme.typography.bodyMedium,
-              color = MaterialTheme.colorScheme.error,
-            )
-          }
-          Spacer(modifier = Modifier.height(10.dp))
-        }
-        CommandUiState.Idle -> Unit
-      }
-
-      if (attachedImageBytes != null) {
-        Surface(
-          shape = RoundedCornerShape(16.dp),
-          color = NexaBlueCore.copy(alpha = 0.14f),
-          border = BorderStroke(1.dp, NexaBlueCore.copy(alpha = 0.35f)),
-          modifier = Modifier.padding(bottom = 8.dp).testTag("attached_vision_badge"),
-        ) {
-          Row(
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-            verticalAlignment = Alignment.CenterVertically,
-          ) {
-            Icon(Icons.Rounded.AddPhotoAlternate, contentDescription = null, tint = NexaBlueCore, modifier = Modifier.size(16.dp))
-            Spacer(modifier = Modifier.width(6.dp))
-            Text(
-              text = "Image attached for Vision AI",
-              style = MaterialTheme.typography.labelMedium,
-              color = NexaBlueCore,
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Icon(
-              imageVector = Icons.Rounded.Close,
-              contentDescription = "Remove attached image",
-              tint = NexaRoseRadar,
-              modifier = Modifier.size(16.dp).clickable { attachedImageBytes = null },
-            )
-          }
-        }
-      }
-
-      // Bottom Frosted Command Input Bar (matching screenshot)
-      Surface(
-        shape = RoundedCornerShape(28.dp),
-        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.94f),
-        shadowElevation = 12.dp,
-        border = BorderStroke(1.2.dp, Color.White.copy(alpha = 0.86f)),
-        modifier = Modifier.fillMaxWidth(),
-      ) {
-        Row(
-          modifier = Modifier.fillMaxWidth().padding(start = 10.dp, end = 6.dp, top = 6.dp, bottom = 6.dp),
-          verticalAlignment = Alignment.CenterVertically,
-        ) {
-          IconButton(
-            onClick = {
-              photoPickerLauncher.launch(
-                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-              )
-            },
-            modifier = Modifier.size(44.dp).testTag("home_attach_photo_button"),
-          ) {
-            Icon(
-              imageVector = Icons.Rounded.AddPhotoAlternate,
-              contentDescription = "Attach Photo or Screenshot for Vision AI",
-              tint = if (attachedImageBytes != null) NexaBlueCore else MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-          }
-          Box(
-            modifier = Modifier.weight(1f).padding(horizontal = 4.dp),
-            contentAlignment = Alignment.CenterStart,
-          ) {
-            if (commandInput.isEmpty()) {
-              Text(
-                text =
-                  if (attachedImageBytes != null) "Ask Vision AI about this image..."
-                  else "ZED se kuch bhi poochho...",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-              )
-            }
-            BasicTextField(
-              value = commandInput,
-              onValueChange = { commandInput = it },
-              singleLine = true,
-              textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface),
-              cursorBrush = SolidColor(NexaBlueCore),
-              keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
-              keyboardActions = KeyboardActions(onSend = { submitCurrentInput() }),
-              modifier = Modifier.fillMaxWidth().testTag("home_command_input"),
-            )
-          }
-          Surface(
-            shape = CircleShape,
-            color = Color.White,
-            shadowElevation = 6.dp,
-            modifier = Modifier.size(44.dp),
-          ) {
-            IconButton(
-              onClick = { submitCurrentInput() },
-              modifier = Modifier.testTag("home_send_command_button"),
-            ) {
-              Icon(
-                imageVector = Icons.AutoMirrored.Rounded.Send,
-                contentDescription = "Send Command",
-                tint = NexaBlueCore,
-              )
-            }
-          }
-        }
-      }
-
-      Spacer(modifier = Modifier.height(106.dp))
-    }
-  }
-}
-
-@Composable
-private fun QuickPillChip(
-  icon: ImageVector,
-  label: String,
-  tint: Color,
-  onClick: () -> Unit,
-) {
-  Surface(
-    shape = RoundedCornerShape(22.dp),
-    color = MaterialTheme.colorScheme.surface.copy(alpha = 0.94f),
-    shadowElevation = 8.dp,
-    border = BorderStroke(1.2.dp, Color.White.copy(alpha = 0.85f)),
-    modifier = Modifier.clickable(onClick = onClick),
-  ) {
-    Row(
-      modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
-      verticalAlignment = Alignment.CenterVertically,
-    ) {
-      Icon(
-        imageVector = icon,
-        contentDescription = null,
-        tint = tint,
-        modifier = Modifier.size(16.dp),
-      )
-      Spacer(modifier = Modifier.width(6.dp))
-      Text(
-        text = label,
-        fontSize = 13.sp,
-        fontWeight = FontWeight.Medium,
-        color = MaterialTheme.colorScheme.onSurface,
-      )
-    }
-  }
-}
-
-@Composable
-private fun AgentFilterChip(
-  label: String,
-  selected: Boolean,
-  onClick: () -> Unit,
-) {
-  Surface(
-    shape = RoundedCornerShape(16.dp),
-    color = if (selected) NexaBlueCore else MaterialTheme.colorScheme.surface.copy(alpha = 0.86f),
-    border = BorderStroke(1.dp, if (selected) NexaBlueCore else Color.White.copy(alpha = 0.80f)),
-    modifier = Modifier.clickable(onClick = onClick),
-  ) {
-    Text(
-      text = label,
-      style = MaterialTheme.typography.labelLarge,
-      color = if (selected) Color.White else MaterialTheme.colorScheme.onSurface,
-      modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+    val infiniteTransition = rememberInfiniteTransition(label = "zed4d")
+    val orbRotation by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(14000, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        ),
+        label = "rot"
     )
-  }
+    val activeAudio = !isOrbMuted && (isVoiceListening || wakeRunning || commandUiState.isProcessing)
+    val pulseScale by infiniteTransition.animateFloat(
+        initialValue = 0.94f,
+        targetValue = if (activeAudio) 1.14f else 1.01f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(if (activeAudio) 400 else 1800, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "pulse"
+    )
+
+    val frostBg = Brush.verticalGradient(
+        colors = listOf(Color(0xFFEAF1FC), Color(0xFFDCE7F9), Color(0xFFE5EEFC))
+    )
+    val cardColor = Color(0xFFF4F8FF)
+    val textDark = Color(0xFF1E293B)
+    val textSub = Color(0xFF64748B)
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(frostBg)
+            .verticalScroll(scrollState)
+            .padding(horizontal = 18.dp, vertical = 8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column {
+                Text(greeting, fontSize = 18.sp, color = textSub)
+                Text(bossName.uppercase(), fontSize = 30.sp, fontWeight = FontWeight.Light, color = textDark, letterSpacing = 1.sp)
+            }
+
+            Surface(
+                shape = RoundedCornerShape(20.dp),
+                color = cardColor,
+                shadowElevation = 8.dp
+            ) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(Icons.Default.Bolt, contentDescription = null, tint = Color(0xFFF59E0B), modifier = Modifier.size(20.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Column {
+                        Text("$energyPoints", fontWeight = FontWeight.Bold, fontSize = 14.sp, color = textDark)
+                        Text("Energy", fontSize = 11.sp, color = textSub)
+                    }
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        // BIG CENTER HOLOGRAM ORB -> TAP TO MUTE / UNMUTE
+        Box(
+            modifier = Modifier
+                .size(240.dp)
+                .clickable { onToggleMuteOrb() },
+            contentAlignment = Alignment.Center
+        ) {
+            Canvas(modifier = Modifier.fillMaxSize()) {
+                val center = Offset(size.width / 2f, size.height / 2f)
+                val baseRadius = size.minDimension * 0.30f * pulseScale
+                val activeGlow = when {
+                    isOrbMuted -> Color(0xFF94A3B8)
+                    activeAudio -> Color(0xFFFF3B7F)
+                    else -> Color(0xFF3B82F6)
+                }
+
+                drawCircle(
+                    brush = Brush.radialGradient(
+                        colors = listOf(activeGlow.copy(alpha = 0.32f), Color.Transparent),
+                        center = center,
+                        radius = size.minDimension * 0.49f
+                    ),
+                    radius = size.minDimension * 0.49f,
+                    center = center
+                )
+
+                val tickCount = 64
+                for (i in 0 until tickCount) {
+                    val angleDeg = (i * (360f / tickCount)) + (orbRotation * 0.5f)
+                    val rad = Math.toRadians(angleDeg.toDouble())
+                    val waveBoost = if (activeAudio) {
+                        (sin(Math.toRadians((i * 25f + orbRotation * 4f).toDouble())).toFloat() * 10f).coerceAtLeast(0f)
+                    } else 2f
+
+                    val innerR = baseRadius + 10f
+                    val outerR = innerR + 14f + waveBoost
+                    val start = Offset(
+                        center.x + (cos(rad) * innerR).toFloat(),
+                        center.y + (sin(rad) * innerR).toFloat()
+                    )
+                    val end = Offset(
+                        center.x + (cos(rad) * outerR).toFloat(),
+                        center.y + (sin(rad) * outerR).toFloat()
+                    )
+                    drawLine(
+                        color = when {
+                            isOrbMuted -> Color(0xFF94A3B8).copy(alpha = 0.5f)
+                            activeAudio -> Color(0xFFFF4D8D)
+                            else -> Color(0xFF60A5FA).copy(alpha = 0.75f)
+                        },
+                        start = start,
+                        end = end,
+                        strokeWidth = 2.6f,
+                        cap = StrokeCap.Round
+                    )
+                }
+
+                drawCircle(
+                    color = when {
+                        isOrbMuted -> Color(0xFF64748B)
+                        activeAudio -> Color(0xFFFF4D8D)
+                        else -> Color(0xFF38BDF8)
+                    },
+                    radius = baseRadius + 4f,
+                    center = center
+                )
+
+                drawCircle(
+                    brush = Brush.radialGradient(
+                        colors = listOf(Color(0xFF1A120B), Color(0xFF07090F)),
+                        center = center,
+                        radius = baseRadius
+                    ),
+                    radius = baseRadius,
+                    center = center
+                )
+
+                val nodeCount = 22
+                val nodes = (0 until nodeCount).map { idx ->
+                    val a = Math.toRadians((idx * (360.0 / nodeCount)) + orbRotation)
+                    val r = baseRadius * (0.28f + 0.52f * ((idx % 4) / 3f))
+                    Offset(
+                        center.x + (cos(a) * r).toFloat(),
+                        center.y + (sin(a) * r).toFloat()
+                    )
+                }
+                for (i in nodes.indices) {
+                    val next = nodes[(i + 3) % nodes.size]
+                    drawLine(
+                        color = if (isOrbMuted) Color(0xFF64748B).copy(alpha = 0.35f) else Color(0xFFFBBF24).copy(alpha = 0.45f),
+                        start = nodes[i],
+                        end = next,
+                        strokeWidth = 1.5f
+                    )
+                    drawCircle(
+                        color = if (isOrbMuted) Color(0xFF94A3B8) else Color(0xFFFDE68A),
+                        radius = 3.2f,
+                        center = nodes[i]
+                    )
+                }
+            }
+
+            if (isOrbMuted) {
+                Surface(
+                    shape = CircleShape,
+                    color = Color(0xCC0F172A),
+                    modifier = Modifier.size(44.dp)
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Icon(Icons.Default.VolumeOff, contentDescription = "Muted", tint = Color(0xFFFF4D8D), modifier = Modifier.size(22.dp))
+                    }
+                }
+            }
+        }
+
+        Text(
+            text = when {
+                isOrbMuted -> "MUTED • Bade gole par tap karke Unmute karein"
+                isVoiceListening -> "Live Voice ON • Sun raha hoon (Orb tap = Mute)"
+                else -> "by The Titan AI • Tap Orb to Mute/Unmute"
+            },
+            fontSize = 11.sp,
+            color = if (isOrbMuted || isVoiceListening) Color(0xFFE11D48) else textSub,
+            fontWeight = FontWeight.Medium
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        // Quick Module Row: Browser, License/Update, Rules
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Surface(
+                onClick = onOpenBrowser,
+                shape = RoundedCornerShape(22.dp),
+                color = cardColor,
+                shadowElevation = 7.dp,
+                modifier = Modifier.weight(1f).height(46.dp)
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
+                    Icon(Icons.Default.Language, contentDescription = null, tint = Color(0xFF2563EB), modifier = Modifier.size(17.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text("Browser", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = textDark)
+                }
+            }
+            Surface(
+                onClick = { onOpenSubRoute("upgrade") },
+                shape = RoundedCornerShape(22.dp),
+                color = cardColor,
+                shadowElevation = 7.dp,
+                modifier = Modifier.weight(1f).height(46.dp)
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
+                    Icon(Icons.Default.Verified, contentDescription = null, tint = Color(0xFF2563EB), modifier = Modifier.size(17.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text("License", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = textDark)
+                }
+            }
+            Surface(
+                onClick = { onOpenSubRoute("rules") },
+                shape = RoundedCornerShape(22.dp),
+                color = cardColor,
+                shadowElevation = 7.dp,
+                modifier = Modifier.weight(1f).height(46.dp)
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
+                    Icon(Icons.Default.Shield, contentDescription = null, tint = Color(0xFF2563EB), modifier = Modifier.size(17.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text("Rules", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = textDark)
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        // 3 Info Cards: Mausam, Aaj, Mood
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Surface(
+                onClick = { onSendCommand("Aaj ka mausam kaisa hai?") },
+                shape = RoundedCornerShape(24.dp),
+                color = cardColor,
+                shadowElevation = 8.dp,
+                modifier = Modifier.weight(1f).height(108.dp)
+            ) {
+                Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.SpaceBetween) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.WbSunny, contentDescription = null, tint = textSub, modifier = Modifier.size(14.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text("Mausam", fontSize = 11.sp, color = textSub)
+                    }
+                    Text("22°", fontSize = 22.sp, fontWeight = FontWeight.SemiBold, color = textDark)
+                    Text("Clear • 78%", fontSize = 11.sp, color = textSub)
+                }
+            }
+
+            Surface(
+                onClick = { onSendCommand("Aaj ka schedule dikhao") },
+                shape = RoundedCornerShape(24.dp),
+                color = cardColor,
+                shadowElevation = 8.dp,
+                modifier = Modifier.weight(1f).height(108.dp)
+            ) {
+                Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.SpaceBetween) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.CalendarToday, contentDescription = null, tint = textSub, modifier = Modifier.size(14.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text("Aaj", fontSize = 11.sp, color = textSub)
+                    }
+                    Text(dayNum, fontSize = 22.sp, fontWeight = FontWeight.SemiBold, color = textDark)
+                    Text(dayMonth, fontSize = 11.sp, color = textSub)
+                }
+            }
+
+            Surface(
+                onClick = { onSendCommand("Mera mood kaisa hai?") },
+                shape = RoundedCornerShape(24.dp),
+                color = cardColor,
+                shadowElevation = 8.dp,
+                modifier = Modifier.weight(1f).height(108.dp)
+            ) {
+                Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.SpaceBetween) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.Favorite, contentDescription = null, tint = Color(0xFF1E293B), modifier = Modifier.size(14.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text("Mood", fontSize = 11.sp, color = textSub)
+                    }
+                    Text("Pyaar b...", fontSize = 18.sp, fontWeight = FontWeight.SemiBold, color = textDark, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Text(moodStatus, fontSize = 11.sp, color = textSub, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        // Prompt Input Bar
+        Surface(
+            shape = RoundedCornerShape(28.dp),
+            color = cardColor,
+            shadowElevation = 8.dp,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Row(
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(Icons.Default.AttachFile, contentDescription = null, tint = textSub, modifier = Modifier.size(20.dp))
+                TextField(
+                    value = promptText,
+                    onValueChange = { promptText = it },
+                    placeholder = { Text("ZED se kuch bhi poochho...", fontSize = 14.sp, color = textSub) },
+                    singleLine = true,
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent
+                    ),
+                    modifier = Modifier.weight(1f)
+                )
+                Surface(
+                    onClick = {
+                        if (promptText.isNotBlank()) {
+                            onSendCommand(promptText)
+                            promptText = ""
+                        }
+                    },
+                    shape = CircleShape,
+                    color = Color(0xFFE8EFFA),
+                    shadowElevation = 4.dp,
+                    modifier = Modifier.size(40.dp)
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Icon(Icons.AutoMirrored.Filled.Send, contentDescription = "Send", tint = textDark, modifier = Modifier.size(18.dp))
+                    }
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(86.dp))
+    }
 }
