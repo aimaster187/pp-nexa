@@ -22,7 +22,11 @@ data class LicenseUiState(
     val isBanned: Boolean = false,
     val isChecking: Boolean = false,
     val errorMessage: String? = null
-)
+) {
+    val isLoading: Boolean get() = isChecking
+    val statusMessage: String? get() = errorMessage
+    val needsPhoneNumber: Boolean get() = false
+}
 
 object NexaLicenseManager {
     private const val PREFS = "zed_vip_license_prefs"
@@ -113,6 +117,11 @@ object NexaLicenseManager {
             }
         }
     }
+
+
+    suspend fun initAndSyncUser(context: Context) { init(context) }
+    suspend fun saveUserPhone(context: Context, phone: String) {}
+    suspend fun activateKey(context: Context, key: String): Boolean = verifyAndActivateKey(context, key)
 
     fun logoutUser(context: Context) {
         val p = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)

@@ -413,7 +413,6 @@ fun NexaMainWorkspace(
           }
         },
         bottomBar = {
-      if (!showZedBrowser) {
           NexaFloatingBottomBar(
             selectedTab = selectedTab,
             isListening = (continuousVoiceLocked && !isOrbMuted) || showVoiceTriggerDialog || wakeRunning,
