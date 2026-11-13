@@ -90,6 +90,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.example.system.NexaLicenseManager
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
+import com.example.system.NexaLicenseManager
 import com.example.ui.theme.NexaAiTheme
 import com.example.ui.theme.NexaBlueCore
 import com.example.ui.theme.NexaDarkBgBottom
@@ -120,7 +127,7 @@ class MainActivity : ComponentActivity() {
     handleWakeWordIntent(intent)
 
     setContent {
-      NexaAiTheme {
+      NexaAiTheme(darkTheme = true) {
         NexaRootNavigation()
       }
     }
@@ -327,7 +334,7 @@ fun NexaMainWorkspace(
         topBar = {
           Box(modifier = Modifier.statusBarsPadding()) {
             NexaTopBar(
-              title = "NEXA AI",
+              title = "ZED AI",
               showDrawerButton = showHamburgerButton,
               onOpenDrawer = {
                 scope.launch {
@@ -374,7 +381,43 @@ fun NexaMainWorkspace(
                 ) {
                   Column(horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally) {
                     Text("ACCOUNT SUSPENDED", color = androidx.compose.ui.graphics.Color(0xFFFF2A6D), style = MaterialTheme.typography.headlineMedium)
-                    Text("NEXA Admin dwara aapka access band kar diya gaya hai.", color = androidx.compose.ui.graphics.Color.White, modifier = Modifier.padding(top = 8.dp))
+                    Text("ZED Admin dwara aapka access band kar diya gaya hai.", color = androidx.compose.ui.graphics.Color.White, modifier = Modifier.padding(top = 8.dp))
+                  }
+                }
+              } else {
+                if (licState.needsPhoneNumber) {
+                  var phoneDraft by remember { mutableStateOf("") }
+                  AlertDialog(
+                    onDismissRequest = {},
+                    title = { Text("Verify Contact Number") },
+                    text = {
+                      OutlinedTextField(
+                        value = phoneDraft,
+                        onValueChange = { phoneDraft = it },
+                        label = { Text("WhatsApp / Mobile Number") },
+                        singleLine = true
+                      )
+                    },
+                    confirmButton = {
+                      Button(onClick = { NexaLicenseManager.saveUserPhone(context, phoneDraft) }) {
+                        Text("Save & Continue")
+                      }
+                    }
+                  )
+                }
+              }
+              val licState by NexaLicenseManager.state.collectAsState()
+              LaunchedEffect(profile?.uid) {
+                NexaLicenseManager.initAndSyncUser(context)
+              }
+              if (licState.isBanned) {
+                Box(
+                  modifier = Modifier.fillMaxSize().background(Color(0xFF060913)).padding(24.dp),
+                  contentAlignment = Alignment.Center
+                ) {
+                  Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text("ACCOUNT SUSPENDED", color = Color(0xFFFF2A6D), style = MaterialTheme.typography.headlineMedium)
+                    Text("ZED Admin dwara aapka access band kar diya gaya hai.", color = Color.White, modifier = Modifier.padding(top = 8.dp))
                   }
                 }
               } else {
@@ -500,7 +543,7 @@ fun NexaMainWorkspace(
   if (showNotificationsDialog) {
     AlertDialog(
       onDismissRequest = { showNotificationsDialog = false },
-      title = { Text("NEXA History & Live OTP") },
+      title = { Text("ZED History & Live OTP") },
       text = {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
           Text(
@@ -519,7 +562,7 @@ fun NexaMainWorkspace(
               modifier =
                 Modifier.fillMaxWidth().clickable {
                   val cm = context.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
-                  cm?.setPrimaryClip(ClipData.newPlainText("NEXA OTP", lastOtp))
+                  cm?.setPrimaryClip(ClipData.newPlainText("ZED OTP", lastOtp))
                   NexaCommandBus.addLog("OTP", "Copied OTP", "Copied $lastOtp to clipboard")
                 },
             ) {
@@ -569,7 +612,7 @@ fun NexaMainWorkspace(
 
   if (showVoiceTriggerDialog) {
     VoiceCommandTriggerDialog(
-      targetAgentName = agents.firstOrNull { it.id == selectedAgentId }?.name ?: "NEXA Core",
+      targetAgentName = agents.firstOrNull { it.id == selectedAgentId }?.name ?: "ZED Core",
       onTranscribeAudio = { audioBytes -> viewModel.transcribeForVoiceTrigger(audioBytes) },
       onExecuteCommand = { spokenCommand -> viewModel.sendCommand(spokenCommand) },
       onDismiss = { showVoiceTriggerDialog = false },

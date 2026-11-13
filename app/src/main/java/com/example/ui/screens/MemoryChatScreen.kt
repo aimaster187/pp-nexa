@@ -173,7 +173,7 @@ fun MemoryChatScreen(
         OutlinedTextField(
           value = messageDraft,
           onValueChange = { messageDraft = it },
-          placeholder = { Text("Ask NEXA or give phone command...") },
+          placeholder = { Text("Ask ZED or give phone command...") },
           singleLine = true,
           shape = RoundedCornerShape(24.dp),
           modifier = Modifier.weight(1f).testTag("chat_tab_input"),

@@ -383,7 +383,7 @@ fun AudioTranscribeScreen(
                     val clipboard =
                       context.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
                     clipboard?.setPrimaryClip(
-                      ClipData.newPlainText("NEXA Transcript", transcriptionState.transcript)
+                      ClipData.newPlainText("ZED Transcript", transcriptionState.transcript)
                     )
                     copiedNotice = true
                   },

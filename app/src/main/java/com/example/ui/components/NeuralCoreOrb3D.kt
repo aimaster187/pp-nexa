@@ -252,7 +252,7 @@ fun NeuralCoreOrb3D(
       modifier
         .size(orbSize)
         .testTag("neural_core_orb_3d")
-        .semantics { contentDescription = "NEXA 3D Neural Core Orb" }
+        .semantics { contentDescription = "ZED 3D Neural Core Orb" }
         .graphicsLayer {
           cameraDistance = 14f * density
           rotationX = gyroTiltX + springCardTiltX

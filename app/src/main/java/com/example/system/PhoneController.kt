@@ -234,7 +234,7 @@ class PhoneController(private val context: Context) {
 
   private fun openEmailCompose(recipient: String, rawSubjectBody: String): String {
     val parts = rawSubjectBody.split("||", limit = 2)
-    val subject = parts.getOrElse(0) { "Message from NEXA AI" }
+    val subject = parts.getOrElse(0) { "Message from ZED AI" }
     val body = parts.getOrElse(1) { rawSubjectBody }
     val intent =
       Intent(Intent.ACTION_SENDTO).apply {
@@ -289,7 +289,7 @@ class PhoneController(private val context: Context) {
           Intent(AlarmClock.ACTION_SET_ALARM).apply {
             putExtra(AlarmClock.EXTRA_HOUR, hour)
             putExtra(AlarmClock.EXTRA_MINUTES, min)
-            putExtra(AlarmClock.EXTRA_MESSAGE, "NEXA AI Alarm")
+            putExtra(AlarmClock.EXTRA_MESSAGE, "ZED AI Alarm")
             putExtra(AlarmClock.EXTRA_SKIP_UI, false)
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
           }
@@ -308,7 +308,7 @@ class PhoneController(private val context: Context) {
         val intent =
           Intent(AlarmClock.ACTION_SET_TIMER).apply {
             putExtra(AlarmClock.EXTRA_LENGTH, seconds)
-            putExtra(AlarmClock.EXTRA_MESSAGE, "NEXA AI Timer")
+            putExtra(AlarmClock.EXTRA_MESSAGE, "ZED AI Timer")
             putExtra(AlarmClock.EXTRA_SKIP_UI, false)
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
           }
@@ -424,7 +424,7 @@ class PhoneController(private val context: Context) {
     if (text.isBlank()) return "Nothing to copy"
     val cm = context.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
       ?: return "Clipboard unavailable"
-    cm.setPrimaryClip(ClipData.newPlainText("NEXA AI", text))
+    cm.setPrimaryClip(ClipData.newPlainText("ZED AI", text))
     return "Copied to clipboard"
   }
 

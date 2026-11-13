@@ -62,7 +62,7 @@ class NexaWakeWordService : Service() {
       return START_NOT_STICKY
     }
 
-    val notification = buildForegroundNotification("Listening for \"Hey Nexa\" / \"Alexa\"...")
+    val notification = buildForegroundNotification("Listening for \"Hey Zed\" / \"Alexa\"...")
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
       startForeground(
         NOTIFICATION_ID,
@@ -74,7 +74,7 @@ class NexaWakeWordService : Service() {
     }
 
     NexaCommandBus.updateWakeStatus("Listening for wake word...", running = true)
-    NexaCommandBus.addLog("WAKE_WORD", "Background Voice Core Started", "Say 'Hey Nexa', 'Hello Nexa', or 'Alexa'.")
+    NexaCommandBus.addLog("WAKE_WORD", "Background Voice Core Started", "Say 'Hey Zed', 'Hello Zed', or 'Alexa'.")
 
     if (intent?.getBooleanExtra(EXTRA_SHOW_ORB, false) == true) {
       showFloatingOrbIfPermitted()
@@ -184,7 +184,7 @@ class NexaWakeWordService : Service() {
         .split(",")
         .map { it.trim().lowercase(Locale.ROOT) }
         .filter { it.isNotEmpty() }
-        .ifEmpty { listOf("hey nexa", "hello nexa", "nexa", "naksha", "alexa") }
+        .ifEmpty { listOf("hey zed", "hello zed", "nexa", "naksha", "alexa") }
 
     if (isListeningForCommand) {
       isListeningForCommand = false
@@ -227,7 +227,7 @@ class NexaWakeWordService : Service() {
 
     val orb =
       TextView(this).apply {
-        text = "NEXA"
+        text = "ZED"
         setTextColor(Color.WHITE)
         textSize = 11f
         gravity = Gravity.CENTER
@@ -322,7 +322,7 @@ class NexaWakeWordService : Service() {
       val channel =
         NotificationChannel(
           CHANNEL_ID,
-          "NEXA Voice & Wake-Word Core",
+          "ZED Voice & Wake-Word Core",
           NotificationManager.IMPORTANCE_LOW,
         )
       val nm = getSystemService(NotificationManager::class.java)
@@ -339,7 +339,7 @@ class NexaWakeWordService : Service() {
         PendingIntent.FLAG_IMMUTABLE,
       )
     return NotificationCompat.Builder(this, CHANNEL_ID)
-      .setContentTitle("NEXA AI Neural Core Active")
+      .setContentTitle("ZED AI Neural Core Active")
       .setContentText(content)
       .setSmallIcon(R.mipmap.ic_launcher_round)
       .setContentIntent(openIntent)

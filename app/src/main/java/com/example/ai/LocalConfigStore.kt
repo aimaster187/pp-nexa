@@ -51,7 +51,7 @@ class LocalConfigStore(private val context: Context) {
         ttsVoiceReplyEnabled = prefs[Keys.TTS_ENABLED] ?: true,
         floatingOrbEnabled = prefs[Keys.FLOATING_ORB_ENABLED] ?: false,
         accessibilityAgentControlEnabled = prefs[Keys.ACCESSIBILITY_AGENT_ENABLED] ?: true,
-        wakeWordsCsv = prefs[Keys.WAKE_WORDS_CSV] ?: "hey nexa, hello nexa, nexa, naksha, alexa",
+        wakeWordsCsv = prefs[Keys.WAKE_WORDS_CSV] ?: "hey zed, hello zed, nexa, naksha, alexa",
       )
     }
 
@@ -72,7 +72,7 @@ class LocalConfigStore(private val context: Context) {
       prefs[Keys.FLOATING_ORB_ENABLED] = secrets.floatingOrbEnabled
       prefs[Keys.ACCESSIBILITY_AGENT_ENABLED] = secrets.accessibilityAgentControlEnabled
       prefs[Keys.WAKE_WORDS_CSV] =
-        secrets.wakeWordsCsv.trim().ifEmpty { "hey nexa, hello nexa, nexa, naksha, alexa" }
+        secrets.wakeWordsCsv.trim().ifEmpty { "hey zed, hello zed, nexa, naksha, alexa" }
     }
   }
 }

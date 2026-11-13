@@ -40,6 +40,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.sp
 import com.example.system.NexaLicenseManager
 import kotlinx.coroutines.launch
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.sp
+import com.example.system.NexaLicenseManager
+import kotlinx.coroutines.launch
 
 import com.example.data.model.AiProviderType
 import com.example.data.model.LocalAiSecrets
@@ -227,7 +236,7 @@ fun ApiKeysVaultSheet(
           OutlinedTextField(
             value = vipInput,
             onValueChange = { vipInput = it },
-            label = { Text("Paste NEXA-VIP Key") },
+            label = { Text("Paste ZED-VIP Key") },
             singleLine = true,
             enabled = !licState.isVipUnlocked,
             modifier = Modifier.fillMaxWidth(),
@@ -243,6 +252,74 @@ fun ApiKeysVaultSheet(
               modifier = Modifier.fillMaxWidth()
             ) {
               Text(if (licState.isLoading) "Verifying..." else "Activate VIP Key", color = Color.Black, fontWeight = FontWeight.Bold)
+            }
+          }
+          if (licState.statusMessage.isNotBlank()) {
+            Spacer(modifier = Modifier.height(6.dp))
+            Text(
+              text = licState.statusMessage,
+              color = if (licState.isVipUnlocked) Color(0xFF00E676) else NexaRoseRadar,
+              fontSize = 11.sp
+            )
+          }
+        }
+      }
+
+      
+      val ctx = LocalContext.current
+      val scope = rememberCoroutineScope()
+      val licState by NexaLicenseManager.state.collectAsState()
+      var vipInput by remember(licState.activeKey) { mutableStateOf(licState.activeKey) }
+
+      Card(
+        modifier = Modifier.fillMaxWidth().padding(bottom = 14.dp),
+        shape = RoundedCornerShape(18.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF0A1326)),
+        border = BorderStroke(1.dp, if (licState.isVipUnlocked) Color(0xFF00E676) else Color(0xFF00F0FF))
+      ) {
+        Column(modifier = Modifier.padding(14.dp)) {
+          Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+          ) {
+            Text(
+              text = if (licState.isVipUnlocked) "ZED VIP UNLOCKED" else "ZED VIP LICENSE KEY",
+              color = if (licState.isVipUnlocked) Color(0xFF00E676) else Color(0xFF00F0FF),
+              fontWeight = FontWeight.Bold,
+              fontSize = 13.sp
+            )
+            if (licState.isVipUnlocked) {
+              Text(
+                text = "Logout Key",
+                color = NexaRoseRadar,
+                fontWeight = FontWeight.Bold,
+                fontSize = 12.sp,
+                modifier = Modifier.clickable {
+                  scope.launch { NexaLicenseManager.logoutKey(ctx) }
+                }
+              )
+            }
+          }
+          Spacer(modifier = Modifier.height(8.dp))
+          OutlinedTextField(
+            value = vipInput,
+            onValueChange = { vipInput = it },
+            label = { Text("Paste VIP License Key") },
+            singleLine = true,
+            enabled = !licState.isVipUnlocked,
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(12.dp)
+          )
+          if (!licState.isVipUnlocked) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Button(
+              onClick = { scope.launch { NexaLicenseManager.activateKey(ctx, vipInput) } },
+              enabled = !licState.isLoading,
+              shape = RoundedCornerShape(12.dp),
+              colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00B8D4)),
+              modifier = Modifier.fillMaxWidth()
+            ) {
+              Text(if (licState.isLoading) "Verifying..." else "Activate ZED VIP", color = Color.Black, fontWeight = FontWeight.Bold)
             }
           }
           if (licState.statusMessage.isNotBlank()) {

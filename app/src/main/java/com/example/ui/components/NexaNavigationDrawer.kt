@@ -241,7 +241,7 @@ private fun NexaDrawerContent(
         Spacer(modifier = Modifier.width(12.dp))
         Column(modifier = Modifier.weight(1f)) {
           Text(
-            text = "NEXA AI",
+            text = "ZED AI",
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
           )
@@ -427,7 +427,7 @@ private fun NexaDrawerContent(
           Icon(Icons.Rounded.GraphicEq, contentDescription = null, tint = NexaRoseRadar, modifier = Modifier.size(20.dp))
           Spacer(modifier = Modifier.width(10.dp))
           Column {
-            Text("Hey Nexa / Alexa", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
+            Text("Hey Zed / Alexa", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
             Text(
               text = if (model.wakeRunning) "Listening" else "Standby",
               style = MaterialTheme.typography.labelSmall,

@@ -111,7 +111,7 @@ fun PhoneControlConsoleScreen(
       title = { Text("Enable Accessibility Agent Control") },
       text = {
         Text(
-          "NEXA AI uses Android AccessibilityService strictly when you toggle it on to read visible screen elements, click buttons, type text, and run your voice or agent commands. You can pause or disable it anytime."
+          "ZED AI uses Android AccessibilityService strictly when you toggle it on to read visible screen elements, click buttons, type text, and run your voice or agent commands. You can pause or disable it anytime."
         )
       },
       confirmButton = {
@@ -156,7 +156,7 @@ fun PhoneControlConsoleScreen(
           },
           modifier = androidx.compose.ui.Modifier.fillMaxWidth()
         ) {
-          androidx.compose.material3.Text("Set NEXA as Power Button Assistant")
+          androidx.compose.material3.Text("Set ZED as Power Button Assistant")
         }
       }
     }
@@ -272,7 +272,7 @@ fun PhoneControlConsoleScreen(
           Column(modifier = Modifier.weight(1f)) {
             Text("Background Wake-Word Core", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
             Text(
-              text = if (wakeRunning) wakeStatus else "Say 'Hey Nexa', 'Hello Nexa', or 'Alexa' anywhere",
+              text = if (wakeRunning) wakeStatus else "Say 'Hey Zed', 'Hello Zed', or 'Alexa' anywhere",
               style = MaterialTheme.typography.bodyMedium,
               color = if (wakeRunning) NexaEmeraldOk else MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -363,14 +363,14 @@ fun PhoneControlConsoleScreen(
         PermissionActionRow(
           icon = Icons.Rounded.Layers,
           title = "Floating Overlay HUD",
-          subtitle = "Keep NEXA Orb accessible over other apps",
+          subtitle = "Keep ZED Orb accessible over other apps",
           granted = permissions.overlayEnabled,
           onEnableClick = { PermissionsHelper.openOverlaySettings(context) },
         )
         PermissionActionRow(
           icon = Icons.Rounded.Mic,
           title = "Microphone (Voice & Wake Word)",
-          subtitle = "Required for voice commands & Hey Nexa detection",
+          subtitle = "Required for voice commands & Hey Zed detection",
           granted = permissions.micGranted,
           onEnableClick = { micLauncher.launch(Manifest.permission.RECORD_AUDIO) },
         )

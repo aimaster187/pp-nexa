@@ -71,7 +71,7 @@ object NexaLicenseManager {
 
       val profileMap = hashMapOf<String, Any>(
         "uid" to user.uid,
-        "name" to (user.displayName ?: snap.getString("name") ?: "NEXA User"),
+        "name" to (user.displayName ?: snap.getString("name") ?: "ZED User"),
         "email" to (user.email ?: snap.getString("email") ?: ""),
         "phone" to finalPhone,
         "deviceId" to deviceId,
@@ -171,7 +171,7 @@ object NexaLicenseManager {
         "boundDeviceId" to currentDeviceId,
         "boundDeviceModel" to getDeviceModel(),
         "boundUserId" to (user?.uid ?: ""),
-        "boundUserName" to (user?.displayName ?: "NEXA User"),
+        "boundUserName" to (user?.displayName ?: "ZED User"),
         "boundUserEmail" to (user?.email ?: ""),
         "boundUserPhone" to (user?.phoneNumber ?: ""),
       )

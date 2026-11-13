@@ -111,8 +111,8 @@ class NexaViewModel(
           id = "welcome_nexa",
           isUser = false,
           text =
-            "Namaste Boss! Main NEXA AI hoon — aapka 3D autonomous phone-control agent. Mujhe voice ya text command dein: 'WhatsApp open karo', 'Play Store se Telegram install karo', ya apna custom agent banayein.",
-          agentName = "NEXA Core",
+            "Namaste Boss! Main ZED AI hoon — aapka 3D autonomous phone-control agent. Mujhe voice ya text command dein: 'WhatsApp open karo', 'Play Store se Telegram install karo', ya apna custom agent banayein.",
+          agentName = "ZED Core",
         )
       )
     )
@@ -190,9 +190,9 @@ class NexaViewModel(
       _commandUiState.value =
         CommandUiState.Thinking(
           when {
-            imageBytes != null -> "NEXA Vision analyzing image..."
+            imageBytes != null -> "ZED Vision analyzing image..."
             activeAgent != null -> "${activeAgent.name} thinking..."
-            else -> "NEXA Neural Core planning..."
+            else -> "ZED Neural Core planning..."
           }
         )
       try {
@@ -252,7 +252,7 @@ class NexaViewModel(
                 title = prompt.take(48),
                 content = plan.memoryNote,
                 category = "MEMORY",
-                agentName = activeAgent?.name ?: "NEXA Core",
+                agentName = activeAgent?.name ?: "ZED Core",
               )
             )
           }
@@ -297,7 +297,7 @@ class NexaViewModel(
           id = UUID.randomUUID().toString(),
           isUser = false,
           text = "Error: $message",
-          agentName = "NEXA Diagnostics",
+          agentName = "ZED Diagnostics",
         )
     }
   }

@@ -261,7 +261,7 @@ fun NexaGlassCard(
 
 @Composable
 fun NexaTopBar(
-  title: String = "NEXA AI",
+  title: String = "ZED AI",
   showDrawerButton: Boolean = true,
   onOpenDrawer: () -> Unit,
   onOpenNotifications: () -> Unit,

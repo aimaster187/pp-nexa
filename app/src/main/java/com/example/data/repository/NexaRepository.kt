@@ -80,7 +80,7 @@ class NexaRepository(
           mapOf(
             "userId" to uid,
             "bossName" to cleanName,
-            "wakeWords" to listOf("hey nexa", "hello nexa", "nexa", "alexa"),
+            "wakeWords" to listOf("hey zed", "hello zed", "nexa", "alexa"),
             "activeProvider" to AiProviderType.FIREBASE_GEMINI.id,
             "energyPoints" to 100L,
             "moodStatus" to "Neural Core Ready",
@@ -348,7 +348,7 @@ class NexaRepository(
             name = "WhatsApp Auto-Pilot",
             role = "Smart Hinglish & English WhatsApp auto-responder",
             systemPrompt =
-              "You are NEXA WhatsApp Auto-Pilot. Read incoming message notifications and reply concisely, politely, and accurately based on user instructions.",
+              "You are ZED WhatsApp Auto-Pilot. Read incoming message notifications and reply concisely, politely, and accurately based on user instructions.",
             triggerType = "WHATSAPP_INCOMING",
             allowedTools = listOf("AUTO_REPLY", "OPEN_APP", "TAP_TEXT", "INPUT_TEXT"),
             isEnabled = true,
@@ -359,7 +359,7 @@ class NexaRepository(
             name = "Gmail & OTP Relay",
             role = "Reads Gmail/OTP alerts & drafts/sends replies or OTP forwards",
             systemPrompt =
-              "You are NEXA Gmail & OTP Agent. Help read verification OTP notifications, draft smart email replies, and send OTPs only to user-approved contacts/emails.",
+              "You are ZED Gmail & OTP Agent. Help read verification OTP notifications, draft smart email replies, and send OTPs only to user-approved contacts/emails.",
             triggerType = "GMAIL_INCOMING",
             allowedTools = listOf("READ_OTP", "SEND_EMAIL_INTENT", "AUTO_REPLY"),
             isEnabled = true,
@@ -370,7 +370,7 @@ class NexaRepository(
             name = "App Installer & Navigator",
             role = "Opens Play Store, searches apps & automates install taps",
             systemPrompt =
-              "You are NEXA Phone Navigator. Plan accessibility UI steps: OPEN_APP, TAP_TEXT, INPUT_TEXT, SCROLL, and PLAY_STORE_INSTALL.",
+              "You are ZED Phone Navigator. Plan accessibility UI steps: OPEN_APP, TAP_TEXT, INPUT_TEXT, SCROLL, and PLAY_STORE_INSTALL.",
             triggerType = "MANUAL",
             allowedTools = listOf("OPEN_APP", "PLAY_STORE_INSTALL", "TAP_TEXT", "SCROLL", "INPUT_TEXT"),
             isEnabled = true,
@@ -379,9 +379,9 @@ class NexaRepository(
           ),
           CustomAgent(
             name = "Voice Wake Commander",
-            role = "Always-ready agent triggered by Hey Nexa / Hello Nexa / Alexa",
+            role = "Always-ready agent triggered by Hey Zed / Hello Zed / Alexa",
             systemPrompt =
-              "You are NEXA Voice Commander. Convert natural spoken Hinglish/English commands into immediate phone-control steps and brief spoken feedback.",
+              "You are ZED Voice Commander. Convert natural spoken Hinglish/English commands into immediate phone-control steps and brief spoken feedback.",
             triggerType = "VOICE_WAKE",
             allowedTools = listOf("OPEN_APP", "TOGGLE_FLASHLIGHT", "DIAL_OR_CALL", "SPEAK", "BACK", "HOME"),
             isEnabled = true,
@@ -402,7 +402,7 @@ class NexaRepository(
             targetApp = "WHATSAPP",
             triggerPattern = "*",
             replyTemplateOrGoal =
-              "Reply warmly in Hinglish: 'Abhi thoda busy hoon, NEXA AI ne aapka message note kar liya hai. Jaldi call/reply karta hoon!'",
+              "Reply warmly in Hinglish: 'Abhi thoda busy hoon, ZED AI ne aapka message note kar liya hai. Jaldi call/reply karta hoon!'",
             useAiReply = true,
             isActive = false,
             requireConfirmation = false,

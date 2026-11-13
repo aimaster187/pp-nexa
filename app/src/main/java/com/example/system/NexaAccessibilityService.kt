@@ -21,7 +21,7 @@ class NexaAccessibilityService : AccessibilityService() {
     NexaCommandBus.addLog(
       source = "ACCESSIBILITY",
       title = "Accessibility Core Connected",
-      detail = "NEXA AI can now inspect UI nodes, tap, scroll & automate flows.",
+      detail = "ZED AI can now inspect UI nodes, tap, scroll & automate flows.",
       status = "SUCCESS",
     )
     Log.i(TAG, "NexaAccessibilityService connected")

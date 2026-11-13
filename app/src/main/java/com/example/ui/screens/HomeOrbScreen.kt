@@ -265,7 +265,7 @@ fun HomeOrbScreen(
               text =
                 when (commandUiState) {
                   is CommandUiState.Thinking -> commandUiState.label
-                  else -> if (wakeRunning) wakeStatus else "Tap 3D Core or say 'Hey Nexa'"
+                  else -> if (wakeRunning) wakeStatus else "Tap 3D Core or say 'Hey Zed'"
                 },
               style = MaterialTheme.typography.labelSmall,
               color = MaterialTheme.colorScheme.onSurface,
@@ -411,7 +411,7 @@ fun HomeOrbScreen(
           onClick = {
             if (!lastOtp.isNullOrBlank()) {
               val cm = context.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
-              cm?.setPrimaryClip(ClipData.newPlainText("NEXA OTP", lastOtp))
+              cm?.setPrimaryClip(ClipData.newPlainText("ZED OTP", lastOtp))
               otpCopiedHint = true
             } else {
               onNavigateTab(NexaTab.CONTROL)
@@ -452,7 +452,7 @@ fun HomeOrbScreen(
                   when {
                     otpCopiedHint -> "OTP Copied!"
                     !lastOtp.isNullOrBlank() -> "OTP: $lastOtp"
-                    else -> "Hey Nexa"
+                    else -> "Hey Zed"
                   },
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -474,7 +474,7 @@ fun HomeOrbScreen(
           verticalAlignment = Alignment.CenterVertically,
         ) {
           AgentFilterChip(
-            label = "NEXA Core",
+            label = "ZED Core",
             selected = selectedAgentId == null,
             onClick = { onSelectAgent(null) },
           )
@@ -510,7 +510,7 @@ fun HomeOrbScreen(
               Icon(Icons.Rounded.AutoAwesome, contentDescription = null, tint = NexaBlueCore, modifier = Modifier.size(16.dp))
               Spacer(modifier = Modifier.width(6.dp))
               Text(
-                text = selectedAgent?.name ?: "NEXA AI",
+                text = selectedAgent?.name ?: "ZED AI",
                 style = MaterialTheme.typography.labelLarge,
                 color = NexaBlueCore,
               )
@@ -601,7 +601,7 @@ fun HomeOrbScreen(
               Text(
                 text =
                   if (attachedImageBytes != null) "Ask Vision AI about this image..."
-                  else "NEXA se kuch bhi poochho...",
+                  else "ZED se kuch bhi poochho...",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,

@@ -207,14 +207,14 @@ fun AuthScreen(
       Spacer(modifier = Modifier.height(12.dp))
 
       Text(
-        text = "NEXA AI",
+        text = "ZED AI",
         style = MaterialTheme.typography.displaySmall,
         color = MaterialTheme.colorScheme.onBackground,
         fontWeight = FontWeight.Bold,
       )
       Spacer(modifier = Modifier.height(4.dp))
       Text(
-        text = "Multi-Agent Control · WhatsApp/Gmail Auto-Reply · Hey Nexa",
+        text = "Multi-Agent Control · WhatsApp/Gmail Auto-Reply · Hey Zed",
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         textAlign = TextAlign.Center,
@@ -431,7 +431,7 @@ fun AuthScreen(
             modifier = Modifier.fillMaxWidth().height(50.dp),
           ) {
             Text(
-              text = if (authTabIndex == 0) "Sign In to NEXA" else "Create Account",
+              text = if (authTabIndex == 0) "Sign In to ZED" else "Create Account",
               style = MaterialTheme.typography.titleMedium,
               fontWeight = FontWeight.SemiBold,
               color = Color.White,

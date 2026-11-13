@@ -42,7 +42,7 @@ class AiBrainRouter {
           "spokenReply" to
             Schema.string(
               description =
-                "Friendly, concise response to the Boss in Hinglish/English explaining what NEXA is doing."
+                "Friendly, concise response to the Boss in Hinglish/English explaining what ZED is doing."
             ),
           "memoryNote" to
             Schema.string(
@@ -285,7 +285,7 @@ class AiBrainRouter {
       when (AiProviderType.fromId(secrets.activeProvider)) {
         AiProviderType.FIREBASE_GEMINI -> {
           firebaseAutoReplyModel.generateContent(prompt).text?.trim()
-            ?: "NEXA AI: Message received. Will respond shortly."
+            ?: "ZED AI: Message received. Will respond shortly."
         }
         AiProviderType.CUSTOM_GEMINI -> {
           if (secrets.geminiApiKey.isBlank()) goalOrTemplate
@@ -507,7 +507,7 @@ class AiBrainRouter {
 
     val CORE_SYSTEM_PROMPT =
       """
-      You are NEXA AI, an advanced Android autonomous phone-control agent assistant serving the user ("Boss").
+      You are ZED AI, an advanced Android autonomous phone-control agent assistant serving the user ("Boss").
       You understand Hindi, Hinglish, and English fluently.
       Return a valid JSON object with keys:
       - "spokenReply": concise friendly confirmation or answer in Boss's language.

@@ -22,7 +22,7 @@ data class UserProfile(
   @DocumentId val id: String = "",
   val userId: String = "",
   val bossName: String = "BOSS",
-  val wakeWords: List<String> = listOf("hey nexa", "hello nexa", "nexa", "alexa"),
+  val wakeWords: List<String> = listOf("hey zed", "hello zed", "nexa", "alexa"),
   val activeProvider: String = AiProviderType.FIREBASE_GEMINI.id,
   val energyPoints: Long = 100L,
   val moodStatus: String = "Neural Core Active",
@@ -70,7 +70,7 @@ data class MemoryEntry(
   val title: String = "",
   val content: String = "",
   val category: String = "MEMORY",
-  val agentName: String = "NEXA Core",
+  val agentName: String = "ZED Core",
   @ServerTimestamp val createdAt: Timestamp? = null,
   @ServerTimestamp val updatedAt: Timestamp? = null,
 )
@@ -93,7 +93,7 @@ data class ChatTurn(
   val id: String,
   val isUser: Boolean,
   val text: String,
-  val agentName: String = "NEXA AI",
+  val agentName: String = "ZED AI",
   val plannedSteps: List<PhoneActionStep> = emptyList(),
   val executionStatus: String = "",
   val timestampMs: Long = System.currentTimeMillis(),
@@ -131,7 +131,7 @@ data class LocalAiSecrets(
   val ttsVoiceReplyEnabled: Boolean = true,
   val floatingOrbEnabled: Boolean = false,
   val accessibilityAgentControlEnabled: Boolean = true,
-  val wakeWordsCsv: String = "hey nexa, hello nexa, nexa, alexa",
+  val wakeWordsCsv: String = "hey zed, hello zed, nexa, alexa",
 )
 
 data class DevicePermissionsState(
