@@ -62,7 +62,7 @@ val NexaShapes =
 
 @Composable
 fun NexaAiTheme(
-  darkTheme: Boolean = isSystemInDarkTheme(),
+  darkTheme: Boolean = false,
   content: @Composable () -> Unit,
 ) {
   val colors = if (darkTheme) NexaDarkScheme else NexaLightScheme

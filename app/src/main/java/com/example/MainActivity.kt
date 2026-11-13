@@ -218,6 +218,11 @@ fun NexaMainWorkspace(
   val transcriptionState by viewModel.transcriptionState.collectAsStateWithLifecycle()
   val transcriptionHistory by viewModel.transcriptionHistory.collectAsStateWithLifecycle()
 
+  val trialPrefs = remember { context.getSharedPreferences("zed_daily_free_trial", Context.MODE_PRIVATE) }
+  val todayKey = remember { java.text.SimpleDateFormat("yyyyMMdd", java.util.Locale.getDefault()).format(java.util.Date()) }
+  var freeSecondsUsedToday by remember { mutableIntStateOf(trialPrefs.getInt("used_$todayKey", 0)) }
+  val freeSecondsRemaining = (600 - freeSecondsUsedToday).coerceAtLeast(0)
+
   var isOrbMuted by remember { mutableStateOf(false) }
   var continuousVoiceLocked by remember { mutableStateOf(false) }
   var showZedBrowser by remember { mutableStateOf(false) }
@@ -480,7 +485,7 @@ fun NexaMainWorkspace(
                       Text("ZED AI VIP LOCKED", fontSize = 22.sp, fontWeight = FontWeight.Bold, color = Color(0xFF1E293B))
                       Text("by The Titan AI", fontSize = 12.sp, color = Color(0xFF2563EB), fontWeight = FontWeight.SemiBold)
                       Text(
-                        "Is app ko use karne ke liye Admin Panel se generate ki gayi VIP License Key dalein.",
+                        "Aaj ka 10-minute FREE trial poora ho gaya hai! Unlimited 24x7 use ke liye VIP License Key dalein.",
                         fontSize = 13.sp,
                         color = Color(0xFF64748B),
                         modifier = Modifier.padding(vertical = 12.dp)
@@ -489,6 +494,7 @@ fun NexaMainWorkspace(
                         value = gateKeyInput,
                         onValueChange = { gateKeyInput = it },
                         label = { Text("Enter ZED-VIP-XXXX-XXXX Key") },
+                        textStyle = androidx.compose.ui.text.TextStyle(color = Color(0xFF0F172A), fontWeight = FontWeight.Bold),
                         singleLine = true,
                         shape = RoundedCornerShape(16.dp),
                         modifier = Modifier.fillMaxWidth()
@@ -547,6 +553,8 @@ fun NexaMainWorkspace(
                   onToggleMuteOrb = { isOrbMuted = !isOrbMuted },
                   onOpenBrowser = { showZedBrowser = true },
                   onOpenSubRoute = { activeSubRoute = it },
+                  isFreeTrialActive = !licState.isVipUnlocked,
+                  freeSecondsRemaining = freeSecondsRemaining,
                 )
               }
             }
