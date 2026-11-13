@@ -33,6 +33,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.model.*
+import com.example.ui.NexaCommandUiState
 import com.example.ai.LocalSecrets
 import com.example.ui.components.NexaTab
 import java.text.SimpleDateFormat
