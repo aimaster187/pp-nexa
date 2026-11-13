@@ -77,10 +77,10 @@ fun ZedBrowserScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    IconButton(onClick = { if (webViewRef?.canGoBack() == true) webViewRef?.goBack() }, modifier = Modifier.size(36.dp)) {
+                    IconButton(onClick = { if (webViewRef?.canGoBack() == true) webViewRef?.goBack() }, modifier = Modifier.size(34.dp)) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color(0xFF1E293B))
                     }
-                    IconButton(onClick = { if (webViewRef?.canGoForward() == true) webViewRef?.goForward() }, modifier = Modifier.size(36.dp)) {
+                    IconButton(onClick = { if (webViewRef?.canGoForward() == true) webViewRef?.goForward() }, modifier = Modifier.size(34.dp)) {
                         Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = "Forward", tint = Color(0xFF1E293B))
                     }
                     OutlinedTextField(
@@ -93,19 +93,18 @@ fun ZedBrowserScreen(
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Go),
                         keyboardActions = KeyboardActions(onGo = { loadSmartUrl(urlInput) }),
                         shape = RoundedCornerShape(14.dp),
-                        modifier = Modifier.weight(1f).height(50.dp)
+                        modifier = Modifier.weight(1f).height(48.dp)
                     )
-                    IconButton(onClick = { webViewRef?.reload() }, modifier = Modifier.size(36.dp)) {
+                    IconButton(onClick = { webViewRef?.reload() }, modifier = Modifier.size(34.dp)) {
                         Icon(Icons.Default.Refresh, contentDescription = "Reload", tint = Color(0xFF2563EB))
                     }
-                    IconButton(onClick = onClose, modifier = Modifier.size(36.dp)) {
+                    IconButton(onClick = onClose, modifier = Modifier.size(34.dp)) {
                         Icon(Icons.Default.Close, contentDescription = "Close", tint = Color(0xFFE11D48))
                     }
                 }
 
                 Spacer(modifier = Modifier.height(6.dp))
 
-                // Quick Google & Account Bar inside ZED Browser
                 Row(
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),

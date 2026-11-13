@@ -72,7 +72,7 @@ fun HomeOrbScreen(
     val focusManager = LocalFocusManager.current
 
     val bossName = profile?.bossName?.ifBlank { "BOSS" } ?: "BOSS"
-    val energyPoints = profile?.energyPoints ?: 4
+    val energyPoints = profile?.energyPoints ?: 100
     val moodStatus = profile?.moodStatus?.ifBlank { "Sab badhiya" } ?: "Sab badhiya"
 
     val hour = remember { Calendar.getInstance().get(Calendar.HOUR_OF_DAY) }
@@ -89,35 +89,24 @@ fun HomeOrbScreen(
     val orbRotation by infiniteTransition.animateFloat(
         initialValue = 0f,
         targetValue = 360f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(12000, easing = LinearEasing),
-            repeatMode = RepeatMode.Restart
-        ),
+        animationSpec = infiniteRepeatable(animation = tween(11000, easing = LinearEasing), repeatMode = RepeatMode.Restart),
         label = "rot"
     )
     val counterRotation by infiniteTransition.animateFloat(
         initialValue = 360f,
         targetValue = 0f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(9000, easing = LinearEasing),
-            repeatMode = RepeatMode.Restart
-        ),
+        animationSpec = infiniteRepeatable(animation = tween(8500, easing = LinearEasing), repeatMode = RepeatMode.Restart),
         label = "crot"
     )
     val activeAudio = !isOrbMuted && (isVoiceListening || wakeRunning || commandUiState is CommandUiState.Thinking)
     val pulseScale by infiniteTransition.animateFloat(
-        initialValue = 0.95f,
+        initialValue = 0.96f,
         targetValue = if (activeAudio) 1.13f else 1.02f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(if (activeAudio) 380 else 1700, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse
-        ),
+        animationSpec = infiniteRepeatable(animation = tween(if (activeAudio) 360 else 1600, easing = FastOutSlowInEasing), repeatMode = RepeatMode.Reverse),
         label = "pulse"
     )
 
-    val frostBg = Brush.verticalGradient(
-        colors = listOf(Color(0xFFEAF1FC), Color(0xFFDCE7F9), Color(0xFFE5EEFC))
-    )
+    val frostBg = Brush.verticalGradient(colors = listOf(Color(0xFFEAF1FC), Color(0xFFDCE7F9), Color(0xFFE5EEFC)))
     val cardColor = Color(0xFFF4F8FF)
     val textDark = Color(0xFF0F172A)
     val textSub = Color(0xFF64748B)
@@ -131,7 +120,6 @@ fun HomeOrbScreen(
             .padding(horizontal = 18.dp, vertical = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Greeting + Free Trial Timer (if free) + Energy Badge
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -139,15 +127,11 @@ fun HomeOrbScreen(
         ) {
             Column {
                 Text(greeting, fontSize = 17.sp, color = textSub)
-                Text(bossName.uppercase(), fontSize = 28.sp, fontWeight = FontWeight.Light, color = textDark, letterSpacing = 1.sp)
+                Text(bossName.uppercase(), fontSize = 28.sp, fontWeight = FontWeight.Light, color = textDark)
                 if (isFreeTrialActive) {
                     val mins = freeSecondsRemaining / 60
                     val secs = freeSecondsRemaining % 60
-                    Surface(
-                        shape = RoundedCornerShape(10.dp),
-                        color = Color(0xFFDBEAFE),
-                        modifier = Modifier.padding(top = 4.dp)
-                    ) {
+                    Surface(shape = RoundedCornerShape(10.dp), color = Color(0xFFDBEAFE), modifier = Modifier.padding(top = 4.dp)) {
                         Text(
                             text = String.format("FREE TRIAL: %02d:%02d left today", mins, secs),
                             fontSize = 11.sp,
@@ -159,15 +143,8 @@ fun HomeOrbScreen(
                 }
             }
 
-            Surface(
-                shape = RoundedCornerShape(20.dp),
-                color = cardColor,
-                shadowElevation = 8.dp
-            ) {
-                Row(
-                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+            Surface(shape = RoundedCornerShape(20.dp), color = cardColor, shadowElevation = 8.dp) {
+                Row(modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp), verticalAlignment = Alignment.CenterVertically) {
                     Icon(Icons.Default.Bolt, contentDescription = null, tint = Color(0xFFF59E0B), modifier = Modifier.size(20.dp))
                     Spacer(modifier = Modifier.width(6.dp))
                     Column {
@@ -182,9 +159,7 @@ fun HomeOrbScreen(
 
         // 5D HOLOGRAPHIC QUANTUM CORE ORB -> TAP TO MUTE / UNMUTE
         Box(
-            modifier = Modifier
-                .size(245.dp)
-                .clickable { onToggleMuteOrb() },
+            modifier = Modifier.size(240.dp).clickable { onToggleMuteOrb() },
             contentAlignment = Alignment.Center
         ) {
             Canvas(modifier = Modifier.fillMaxSize()) {
@@ -201,7 +176,6 @@ fun HomeOrbScreen(
                     else -> Color(0xFF06B6D4)
                 }
 
-                // Layer 1: Deep 5D Atmospheric Halo
                 drawCircle(
                     brush = Brush.radialGradient(
                         colors = listOf(primaryGlow.copy(alpha = 0.36f), secondaryGlow.copy(alpha = 0.12f), Color.Transparent),
@@ -212,15 +186,11 @@ fun HomeOrbScreen(
                     center = center
                 )
 
-                // Layer 2: 64 Reactive Outer Quantum Ticks
                 val tickCount = 64
                 for (i in 0 until tickCount) {
                     val angleDeg = (i * (360f / tickCount)) + (orbRotation * 0.6f)
                     val rad = Math.toRadians(angleDeg.toDouble())
-                    val waveBoost = if (activeAudio) {
-                        (sin(Math.toRadians((i * 28f + orbRotation * 5f).toDouble())).toFloat() * 11f).coerceAtLeast(0f)
-                    } else 2.5f
-
+                    val waveBoost = if (activeAudio) (sin(Math.toRadians((i * 28f + orbRotation * 5f).toDouble())).toFloat() * 11f).coerceAtLeast(0f) else 2.5f
                     val innerR = baseRadius + 14f
                     val outerR = innerR + 13f + waveBoost
                     drawLine(
@@ -233,12 +203,11 @@ fun HomeOrbScreen(
                     )
                 }
 
-                // Layer 3: Counter-Rotating 5D Orbital Gyro Arcs
                 val gyroRadius = baseRadius + 8f
                 drawArc(
                     color = secondaryGlow.copy(alpha = 0.85f),
                     startAngle = orbRotation,
-                    sweepAngle = 110f,
+                    sweepAngle = 115f,
                     useCenter = false,
                     topLeft = Offset(center.x - gyroRadius, center.y - gyroRadius),
                     size = Size(gyroRadius * 2f, gyroRadius * 2f),
@@ -247,21 +216,14 @@ fun HomeOrbScreen(
                 drawArc(
                     color = primaryGlow.copy(alpha = 0.9f),
                     startAngle = counterRotation,
-                    sweepAngle = 130f,
+                    sweepAngle = 135f,
                     useCenter = false,
                     topLeft = Offset(center.x - (gyroRadius + 4f), center.y - (gyroRadius + 4f)),
                     size = Size((gyroRadius + 4f) * 2f, (gyroRadius + 4f) * 2f),
                     style = Stroke(width = 2.5f, cap = StrokeCap.Round)
                 )
 
-                // Layer 4: Outer Energy Rim
-                drawCircle(
-                    color = primaryGlow,
-                    radius = baseRadius + 3f,
-                    center = center
-                )
-
-                // Layer 5: Deep Obsidian 5D Core Sphere
+                drawCircle(color = primaryGlow, radius = baseRadius + 3f, center = center)
                 drawCircle(
                     brush = Brush.radialGradient(
                         colors = listOf(Color(0xFF1E1B4B), Color(0xFF090D16), Color(0xFF03050A)),
@@ -272,7 +234,6 @@ fun HomeOrbScreen(
                     center = center
                 )
 
-                // Layer 6: 3D Latitude/Longitude Perspective Rings inside Sphere
                 val tiltFactor = (0.35f + 0.25f * sin(Math.toRadians(orbRotation.toDouble())).toFloat())
                 drawOval(
                     color = secondaryGlow.copy(alpha = 0.35f),
@@ -287,7 +248,6 @@ fun HomeOrbScreen(
                     style = Stroke(width = 1.6f)
                 )
 
-                // Layer 7: Golden Neural Constellation Mesh
                 val nodeCount = 24
                 val nodes = (0 until nodeCount).map { idx ->
                     val a = Math.toRadians((idx * (360.0 / nodeCount)) + orbRotation * 1.2)
@@ -302,14 +262,9 @@ fun HomeOrbScreen(
                         end = next,
                         strokeWidth = 1.5f
                     )
-                    drawCircle(
-                        color = if (isOrbMuted) Color(0xFF94A3B8) else Color(0xFFFEF08A),
-                        radius = 3.3f,
-                        center = nodes[i]
-                    )
+                    drawCircle(color = if (isOrbMuted) Color(0xFF94A3B8) else Color(0xFFFEF08A), radius = 3.3f, center = nodes[i])
                 }
 
-                // Layer 8: 5D Glass Specular Reflection Highlight (Top-Left Gloss)
                 drawCircle(
                     brush = Brush.radialGradient(
                         colors = listOf(Color.White.copy(alpha = 0.34f), Color.Transparent),
@@ -322,11 +277,7 @@ fun HomeOrbScreen(
             }
 
             if (isOrbMuted) {
-                Surface(
-                    shape = CircleShape,
-                    color = Color(0xDD0F172A),
-                    modifier = Modifier.size(46.dp)
-                ) {
+                Surface(shape = CircleShape, color = Color(0xDD0F172A), modifier = Modifier.size(46.dp)) {
                     Box(contentAlignment = Alignment.Center) {
                         Icon(Icons.Default.VolumeOff, contentDescription = "Muted", tint = Color(0xFFFF4D8D), modifier = Modifier.size(22.dp))
                     }
@@ -347,66 +298,34 @@ fun HomeOrbScreen(
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        // Quick Module Row: Browser, License, Rules
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(10.dp)
-        ) {
-            Surface(
-                onClick = onOpenBrowser,
-                shape = RoundedCornerShape(22.dp),
-                color = cardColor,
-                shadowElevation = 7.dp,
-                modifier = Modifier.weight(1f).height(46.dp)
-            ) {
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Surface(onClick = onOpenBrowser, shape = RoundedCornerShape(22.dp), color = cardColor, shadowElevation = 7.dp, modifier = Modifier.weight(1f).height(46.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
-                    Icon(Icons.Default.Language, contentDescription = null, tint = Color(0xFF2563EB), modifier = Modifier.size(17.dp))
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text("Browser", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = textDark)
+                    Icon(Icons.Default.Language, contentDescription = null, tint = Color(0xFF2563EB), modifier = Modifier.size(16.dp))
+                    Spacer(modifier = Modifier.width(5.dp))
+                    Text("Browser", fontSize = 12.sp, fontWeight = FontWeight.Medium, color = textDark)
                 }
             }
-            Surface(
-                onClick = { onOpenSubRoute("upgrade") },
-                shape = RoundedCornerShape(22.dp),
-                color = cardColor,
-                shadowElevation = 7.dp,
-                modifier = Modifier.weight(1f).height(46.dp)
-            ) {
+            Surface(onClick = { onOpenSubRoute("scanner") }, shape = RoundedCornerShape(22.dp), color = cardColor, shadowElevation = 7.dp, modifier = Modifier.weight(1f).height(46.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
-                    Icon(Icons.Default.CheckCircle, contentDescription = null, tint = Color(0xFF2563EB), modifier = Modifier.size(17.dp))
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text("License", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = textDark)
+                    Icon(Icons.Default.QrCodeScanner, contentDescription = null, tint = Color(0xFF2563EB), modifier = Modifier.size(16.dp))
+                    Spacer(modifier = Modifier.width(5.dp))
+                    Text("Scan", fontSize = 12.sp, fontWeight = FontWeight.Medium, color = textDark)
                 }
             }
-            Surface(
-                onClick = { onOpenSubRoute("rules") },
-                shape = RoundedCornerShape(22.dp),
-                color = cardColor,
-                shadowElevation = 7.dp,
-                modifier = Modifier.weight(1f).height(46.dp)
-            ) {
+            Surface(onClick = { onOpenSubRoute("settings") }, shape = RoundedCornerShape(22.dp), color = cardColor, shadowElevation = 7.dp, modifier = Modifier.weight(1f).height(46.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
-                    Icon(Icons.Default.Security, contentDescription = null, tint = Color(0xFF2563EB), modifier = Modifier.size(17.dp))
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text("Rules", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = textDark)
+                    Icon(Icons.Default.Settings, contentDescription = null, tint = Color(0xFF2563EB), modifier = Modifier.size(16.dp))
+                    Spacer(modifier = Modifier.width(5.dp))
+                    Text("Settings", fontSize = 12.sp, fontWeight = FontWeight.Medium, color = textDark)
                 }
             }
         }
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        // 3 Info Cards: Mausam, Aaj, Mood
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(10.dp)
-        ) {
-            Surface(
-                onClick = { onSendCommand("Aaj ka mausam kaisa hai?") },
-                shape = RoundedCornerShape(24.dp),
-                color = cardColor,
-                shadowElevation = 8.dp,
-                modifier = Modifier.weight(1f).height(104.dp)
-            ) {
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            Surface(onClick = { onSendCommand("Aaj ka mausam kaisa hai?") }, shape = RoundedCornerShape(24.dp), color = cardColor, shadowElevation = 8.dp, modifier = Modifier.weight(1f).height(102.dp)) {
                 Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.SpaceBetween) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Default.WbSunny, contentDescription = null, tint = textSub, modifier = Modifier.size(14.dp))
@@ -417,14 +336,7 @@ fun HomeOrbScreen(
                     Text("Clear • 78%", fontSize = 11.sp, color = textSub)
                 }
             }
-
-            Surface(
-                onClick = { onSendCommand("Aaj ka schedule dikhao") },
-                shape = RoundedCornerShape(24.dp),
-                color = cardColor,
-                shadowElevation = 8.dp,
-                modifier = Modifier.weight(1f).height(104.dp)
-            ) {
+            Surface(onClick = { onSendCommand("Aaj ka schedule dikhao") }, shape = RoundedCornerShape(24.dp), color = cardColor, shadowElevation = 8.dp, modifier = Modifier.weight(1f).height(102.dp)) {
                 Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.SpaceBetween) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Default.CalendarToday, contentDescription = null, tint = textSub, modifier = Modifier.size(14.dp))
@@ -435,21 +347,14 @@ fun HomeOrbScreen(
                     Text(dayMonth, fontSize = 11.sp, color = textSub)
                 }
             }
-
-            Surface(
-                onClick = { onSendCommand("Mera mood kaisa hai?") },
-                shape = RoundedCornerShape(24.dp),
-                color = cardColor,
-                shadowElevation = 8.dp,
-                modifier = Modifier.weight(1f).height(104.dp)
-            ) {
+            Surface(onClick = { onSendCommand("Mera mood kaisa hai?") }, shape = RoundedCornerShape(24.dp), color = cardColor, shadowElevation = 8.dp, modifier = Modifier.weight(1f).height(102.dp)) {
                 Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.SpaceBetween) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Default.Favorite, contentDescription = null, tint = Color(0xFF1E293B), modifier = Modifier.size(14.dp))
                         Spacer(modifier = Modifier.width(4.dp))
                         Text("Mood", fontSize = 11.sp, color = textSub)
                     }
-                    Text("Pyaar b...", fontSize = 18.sp, fontWeight = FontWeight.SemiBold, color = textDark, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Text("Sab badhiya", fontSize = 15.sp, fontWeight = FontWeight.SemiBold, color = textDark, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     Text(moodStatus, fontSize = 11.sp, color = textSub, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 }
             }
@@ -458,16 +363,8 @@ fun HomeOrbScreen(
         Spacer(modifier = Modifier.height(12.dp))
 
         // Crisp Visible Prompt Input Bar (Always visible above keyboard + dark text color)
-        Surface(
-            shape = RoundedCornerShape(28.dp),
-            color = Color.White,
-            shadowElevation = 10.dp,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Row(
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+        Surface(shape = RoundedCornerShape(28.dp), color = Color.White, shadowElevation = 10.dp, modifier = Modifier.fillMaxWidth()) {
+            Row(modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
                 Icon(Icons.Default.AddCircleOutline, contentDescription = null, tint = Color(0xFF2563EB), modifier = Modifier.size(20.dp))
                 TextField(
                     value = promptText,
@@ -492,15 +389,7 @@ fun HomeOrbScreen(
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent
                     ),
-                    modifier = Modifier
-                        .weight(1f)
-                        .onFocusChanged { focusState ->
-                            if (focusState.isFocused) {
-                                coroutineScope.launch {
-                                    scrollState.animateScrollTo(scrollState.maxValue)
-                                }
-                            }
-                        }
+                    modifier = Modifier.weight(1f).onFocusChanged { if (it.isFocused) coroutineScope.launch { scrollState.animateScrollTo(scrollState.maxValue) } }
                 )
                 Surface(
                     onClick = {
@@ -522,6 +411,6 @@ fun HomeOrbScreen(
             }
         }
 
-        Spacer(modifier = Modifier.height(94.dp))
+        Spacer(modifier = Modifier.height(96.dp))
     }
 }
