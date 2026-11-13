@@ -25,14 +25,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.model.*
-import com.example.ui.NexaCommandUiState
 import com.example.ui.components.NexaTab
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.cos
 import kotlin.math.sin
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Send
+import com.example.data.model.CommandUiState
 import androidx.compose.material.icons.filled.AddCircleOutline
 import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.CalendarToday
@@ -42,17 +40,10 @@ import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.VolumeOff
 import androidx.compose.material.icons.filled.WbSunny
-import java.text.SimpleDateFormat
-import java.util.*
-import kotlin.math.cos
-import kotlin.math.sin
-
 
 @Composable
 fun HomeOrbScreen(
-
-
-  profile: UserProfile?,
+profile: UserProfile?,
   agents: List<CustomAgent>,
   selectedAgentId: String?,
   permissions: DevicePermissionsState,
@@ -72,8 +63,7 @@ fun HomeOrbScreen(
     isOrbMuted: Boolean = false,
     onToggleMuteOrb: () -> Unit = {},
     onOpenBrowser: () -> Unit = {},
-    onOpenSubRoute: (String) -> Unit = {}
-,
+    onOpenSubRoute: (String) -> Unit = {},
     isOrbMuted: Boolean = false,
     onToggleMuteOrb: () -> Unit = {},
     onOpenBrowser: () -> Unit = {},
