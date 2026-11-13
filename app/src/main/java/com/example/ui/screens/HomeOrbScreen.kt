@@ -25,51 +25,37 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.model.*
+import com.example.ui.CommandUiState
 import com.example.ui.components.NexaTab
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.cos
 import kotlin.math.sin
-import com.example.data.model.CommandUiState
-import androidx.compose.material.icons.filled.AddCircleOutline
-import androidx.compose.material.icons.filled.Bolt
-import androidx.compose.material.icons.filled.CalendarToday
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Language
-import androidx.compose.material.icons.filled.Security
-import androidx.compose.material.icons.filled.VolumeOff
-import androidx.compose.material.icons.filled.WbSunny
 
 @Composable
 fun HomeOrbScreen(
-profile: UserProfile?,
-  agents: List<CustomAgent>,
-  selectedAgentId: String?,
-  permissions: DevicePermissionsState,
-  secrets: LocalAiSecrets,
-  commandUiState: CommandUiState,
-  wakeStatus: String,
-  wakeRunning: Boolean,
-  lastOtp: String?,
-  isVoiceListening: Boolean,
-  onOrbVoiceClick: () -> Unit,
-  onSendCommand: (String) -> Unit,
-  onSendVisionCommand: (String, ByteArray, String) -> Unit = { _, _, _ -> },
-  onSelectAgent: (String?) -> Unit,
-  onNavigateTab: (NexaTab) -> Unit,
-  onOpenApiKeys: () -> Unit,
-,
-    isOrbMuted: Boolean = false,
-    onToggleMuteOrb: () -> Unit = {},
-    onOpenBrowser: () -> Unit = {},
-    onOpenSubRoute: (String) -> Unit = {},
+    profile: UserProfile?,
+    agents: List<CustomAgent>,
+    selectedAgentId: String?,
+    permissions: DevicePermissionsState,
+    secrets: LocalAiSecrets,
+    commandUiState: CommandUiState,
+    wakeStatus: String,
+    wakeRunning: Boolean,
+    lastOtp: String?,
+    isVoiceListening: Boolean,
+    onOrbVoiceClick: () -> Unit,
+    onSendCommand: (String) -> Unit,
+    onSendVisionCommand: (String, ByteArray, String) -> Unit = { _, _, _ -> },
+    onSelectAgent: (String?) -> Unit,
+    onNavigateTab: (NexaTab) -> Unit,
+    onOpenApiKeys: () -> Unit,
     isOrbMuted: Boolean = false,
     onToggleMuteOrb: () -> Unit = {},
     onOpenBrowser: () -> Unit = {},
     onOpenSubRoute: (String) -> Unit = {}
 ) {
-    var promptText by remember { mutableStateOf("") }
+var promptText by remember { mutableStateOf("") }
     val scrollState = rememberScrollState()
     val bossName = profile?.bossName?.ifBlank { "BOSS" } ?: "BOSS"
     val energyPoints = profile?.energyPoints ?: 4
