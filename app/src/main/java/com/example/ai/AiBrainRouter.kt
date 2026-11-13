@@ -127,7 +127,7 @@ class AiBrainRouter {
   }
 
   private val firebaseTranscribeModel by lazy {
-    Firebase.ai.generativeModel(modelName = "gemini-3.5-transcribe")
+    Firebase.ai.generativeModel(modelName = "gemini-2.5-flash")
   }
 
   fun transcribeAudioStream(
@@ -162,7 +162,7 @@ class AiBrainRouter {
       }
     }
     if (accumulated.isBlank()) {
-      throw IllegalStateException("gemini-3.5-transcribe returned an empty transcript.")
+      throw IllegalStateException("gemini-2.5-flash returned an empty transcript.")
     }
   }
 
@@ -307,10 +307,24 @@ class AiBrainRouter {
     }
   }
 
+
+  private fun cleanModelName(raw: String): String {
+    val cleaned = raw.replace(Regex("[^a-zA-Z0-9._/-]"), "")
+      .removePrefix("models/")
+      .trim()
+    return cleaned.ifBlank { "gemini-2.5-flash" }
+  }
+
+  private fun cleanApiKey(raw: String): String {
+    return raw.replace(Regex("[^a-zA-Z0-9._-]"), "").trim()
+  }
+
   private suspend fun callDirectGeminiRest(apiKey: String, model: String, prompt: String): String =
     withContext(Dispatchers.IO) {
+      val safeKey = cleanApiKey(apiKey)
+      val safeModel = cleanModelName(model)
       val endpoint =
-        "https://generativelanguage.googleapis.com/v1beta/models/$model:generateContent?key=$apiKey"
+        "https://generativelanguage.googleapis.com/v1beta/models/$safeModel:generateContent?key=$safeKey"
       val bodyJson =
         JSONObject().apply {
           put(
@@ -351,8 +365,10 @@ class AiBrainRouter {
 
   private suspend fun callDirectGeminiPlain(apiKey: String, model: String, prompt: String): String =
     withContext(Dispatchers.IO) {
+      val safeKey = cleanApiKey(apiKey)
+      val safeModel = cleanModelName(model)
       val endpoint =
-        "https://generativelanguage.googleapis.com/v1beta/models/$model:generateContent?key=$apiKey"
+        "https://generativelanguage.googleapis.com/v1beta/models/$safeModel:generateContent?key=$safeKey"
       val bodyJson =
         JSONObject().put(
           "contents",
