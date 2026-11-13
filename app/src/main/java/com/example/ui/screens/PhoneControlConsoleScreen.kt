@@ -132,9 +132,10 @@ fun PhoneControlConsoleScreen(
     modifier = Modifier.fillMaxSize().padding(horizontal = 18.dp),
     verticalArrangement = Arrangement.spacedBy(12.dp),
   ) {
-    val ctx = LocalContext.current
-    val licState by NexaLicenseManager.state.collectAsState()
-    androidx.compose.material3.Card(
+    item {
+      val ctx = LocalContext.current
+      val licState by NexaLicenseManager.state.collectAsState()
+      androidx.compose.material3.Card(
       modifier = androidx.compose.ui.Modifier.fillMaxWidth().padding(bottom = 12.dp),
       colors = androidx.compose.material3.CardDefaults.cardColors(
         containerColor = androidx.compose.ui.graphics.Color(0xFF0A1326)
@@ -158,6 +159,7 @@ fun PhoneControlConsoleScreen(
           androidx.compose.material3.Text("Set NEXA as Power Button Assistant")
         }
       }
+    }
     }
 
     item {

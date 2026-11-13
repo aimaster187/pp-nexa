@@ -4,13 +4,16 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import android.provider.Settings
+import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 data class LicenseUiState(
   val isVipUnlocked: Boolean = false,
@@ -27,6 +30,11 @@ object NexaLicenseManager {
   val state: StateFlow<LicenseUiState> = _state.asStateFlow()
 
   private const val PREFS = "nexa_vip_license_prefs"
+
+  private suspend fun <T> Task<T>.awaitResult(): T = suspendCancellableCoroutine { cont ->
+    addOnSuccessListener { res -> cont.resume(res) }
+    addOnFailureListener { err -> cont.resumeWithException(err) }
+  }
 
   @SuppressLint("HardwareIds")
   fun getDeviceId(context: Context): String {
@@ -82,7 +90,6 @@ object NexaLicenseManager {
       }
     }
 
-    // Real-time Ban Listener on User
     userRef.addSnapshotListener { snap, _ ->
       if (snap != null && snap.exists()) {
         val banned = snap.getBoolean("isBanned") == true
@@ -90,7 +97,6 @@ object NexaLicenseManager {
       }
     }
 
-    // Real-time Listener on Saved License Key
     if (savedKey.isNotEmpty()) {
       db.collection("license_keys").document(savedKey).addSnapshotListener { snap, _ ->
         if (snap == null || !snap.exists()) {
@@ -132,7 +138,7 @@ object NexaLicenseManager {
     return try {
       val db = FirebaseFirestore.getInstance()
       val docRef = db.collection("license_keys").document(cleanKey)
-      val snap = docRef.get().await()
+      val snap = docRef.get().awaitResult()
 
       if (!snap.exists()) {
         _state.value = _state.value.copy(isLoading = false, statusMessage = "Invalid License Key! Admin se sahi key lein.")
@@ -169,7 +175,7 @@ object NexaLicenseManager {
         "boundUserEmail" to (user?.email ?: ""),
         "boundUserPhone" to (user?.phoneNumber ?: ""),
       )
-      docRef.set(updates, SetOptions.merge()).await()
+      docRef.set(updates, SetOptions.merge()).awaitResult()
 
       if (user != null) {
         db.collection("users").document(user.uid)
@@ -205,7 +211,7 @@ object NexaLicenseManager {
         val db = FirebaseFirestore.getInstance()
         db.collection("license_keys").document(currentKey)
           .set(mapOf("boundDeviceId" to "", "boundDeviceModel" to ""), SetOptions.merge())
-          .await()
+          .awaitResult()
         val user = FirebaseAuth.getInstance().currentUser
         if (user != null) {
           db.collection("users").document(user.uid)
