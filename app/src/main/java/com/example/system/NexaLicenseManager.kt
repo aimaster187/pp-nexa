@@ -1,5 +1,7 @@
 package com.example.system
 
+import com.example.R
+
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
@@ -28,6 +30,11 @@ data class LicenseUiState(
 object NexaLicenseManager {
   private val _state = MutableStateFlow(LicenseUiState())
   val state: StateFlow<LicenseUiState> = _state.asStateFlow()
+
+  private fun getDb(context: Context): FirebaseFirestore {
+    val dbId = context.getString(R.string.firestore_database_id)
+    return if (dbId.isNotBlank() && dbId != "(default)") FirebaseFirestore.getInstance(dbId) else getDb(context)
+  }
 
   private const val PREFS = "nexa_vip_license_prefs"
 
@@ -59,7 +66,7 @@ object NexaLicenseManager {
     }
 
     val user = FirebaseAuth.getInstance().currentUser ?: return
-    val db = FirebaseFirestore.getInstance()
+    val db = getDb(context)
     val deviceId = getDeviceId(context)
     val deviceModel = getDeviceModel()
 
@@ -125,7 +132,7 @@ object NexaLicenseManager {
     val cleanPhone = phoneInput.trim()
     if (cleanPhone.length < 8) return
     val user = FirebaseAuth.getInstance().currentUser ?: return
-    FirebaseFirestore.getInstance().collection("users").document(user.uid)
+    getDb(context).collection("users").document(user.uid)
       .set(mapOf("phone" to cleanPhone), SetOptions.merge())
     _state.value = _state.value.copy(needsPhoneNumber = false)
   }
@@ -136,7 +143,7 @@ object NexaLicenseManager {
 
     _state.value = _state.value.copy(isLoading = true, statusMessage = "")
     return try {
-      val db = FirebaseFirestore.getInstance()
+      val db = getDb(context)
       val docRef = db.collection("license_keys").document(cleanKey)
       val snap = docRef.get().awaitResult()
 
@@ -208,7 +215,7 @@ object NexaLicenseManager {
     _state.value = _state.value.copy(isLoading = true)
     try {
       if (currentKey.isNotEmpty()) {
-        val db = FirebaseFirestore.getInstance()
+        val db = getDb(context)
         db.collection("license_keys").document(currentKey)
           .set(mapOf("boundDeviceId" to "", "boundDeviceModel" to ""), SetOptions.merge())
           .awaitResult()

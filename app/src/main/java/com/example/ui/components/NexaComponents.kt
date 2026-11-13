@@ -622,7 +622,7 @@ private fun BottomNavItem(
     Spacer(modifier = Modifier.height(2.dp))
     Text(
       text = tab.label,
-      fontSize = 11.sp,
+      fontSize = 10.sp, maxLines = 1, softWrap = false,
       fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Medium,
       color = contentColor,
     )
