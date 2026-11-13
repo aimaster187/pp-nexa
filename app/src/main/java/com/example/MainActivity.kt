@@ -363,7 +363,7 @@ fun NexaMainWorkspace(
             NexaTab.HOME -> {
               
               val licState by NexaLicenseManager.state.collectAsState()
-              LaunchedEffect(profile?.uid) {
+              LaunchedEffect(Unit) {
                 NexaLicenseManager.initAndSyncUser(context)
               }
               if (licState.isBanned) {
