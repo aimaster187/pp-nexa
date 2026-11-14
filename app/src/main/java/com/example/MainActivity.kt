@@ -220,6 +220,7 @@ fun NexaMainWorkspace(
   val transcriptionState by viewModel.transcriptionState.collectAsStateWithLifecycle()
   val transcriptionHistory by viewModel.transcriptionHistory.collectAsStateWithLifecycle()
 
+  val licState by NexaLicenseManager.state.collectAsState()
   val trialPrefs = remember { context.getSharedPreferences("zed_daily_free_trial", Context.MODE_PRIVATE) }
   val todayKey = remember { java.text.SimpleDateFormat("yyyyMMdd", java.util.Locale.getDefault()).format(java.util.Date()) }
   var freeSecondsUsedToday by remember { mutableIntStateOf(trialPrefs.getInt("used_$todayKey", 0)) }
@@ -437,7 +438,7 @@ fun NexaMainWorkspace(
           when (selectedTab) {
             NexaTab.HOME -> {
               
-              val licState by NexaLicenseManager.state.collectAsState()
+              
               LaunchedEffect(Unit) {
                 NexaLicenseManager.initAndSyncUser(context)
               }
@@ -600,34 +601,22 @@ fun NexaMainWorkspace(
               }
             }
             NexaTab.AGENTS -> {
-              AgentsControlScreen(
-                agents = agents,
-                automations = automations,
-                onCreateAgent = { n, r, p, t, tools, auto, hex ->
-                  viewModel.createAgent(n, r, p, t, tools, auto, hex)
-                },
-                onToggleAgent = { viewModel.toggleAgentEnabled(it) },
-                onDeleteAgent = { viewModel.deleteAgent(it) },
-                onRunAgentCommand = { agent, cmd ->
-                  viewModel.sendCommand(cmd, overrideAgent = agent)
-                },
-                onCreateRule = { t, app, pat, goal, ai, conf ->
-                  viewModel.createAutomationRule(t, app, pat, goal, ai, conf)
-                },
-                onToggleRule = { viewModel.toggleAutomationRule(it) },
-                onDeleteRule = { viewModel.deleteAutomationRule(it) },
+              ZedSubRouteScreen(
+                route = "scanner",
+                onBack = { selectedTab = NexaTab.HOME },
+                onOpenRoute = { activeSubRoute = it; selectedTab = NexaTab.HOME },
+                onOpenBrowserWithUrl = { browserStartUrl = it; showZedBrowser = true },
+                onSendQuickPrompt = { selectedTab = NexaTab.TRANSCRIBE; viewModel.sendCommand(it) }
               )
             }
             NexaTab.CONTROL -> {
-              PhoneControlConsoleScreen(
-                permissions = permissions,
-                secrets = secrets,
-                wakeRunning = wakeRunning,
-                wakeStatus = wakeStatus,
-                logs = logs,
-                onSaveSecrets = { viewModel.saveLocalSecrets(it, context) },
-                onRunQuickCommand = { viewModel.sendCommand(it) },
-                onRefreshPermissions = { viewModel.refreshPermissions(context) },
+              ZedSubRouteScreen(
+                route = "settings",
+                onBack = { selectedTab = NexaTab.HOME },
+                onOpenRoute = { activeSubRoute = it; selectedTab = NexaTab.HOME },
+                onOpenApiKeys = { showApiKeysSheet = true },
+                onOpenBrowserWithUrl = { browserStartUrl = it; showZedBrowser = true },
+                onSendQuickPrompt = { selectedTab = NexaTab.TRANSCRIBE; viewModel.sendCommand(it) }
               )
             }
             NexaTab.CHAT -> {

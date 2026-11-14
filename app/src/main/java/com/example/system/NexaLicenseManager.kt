@@ -98,14 +98,14 @@ object NexaLicenseManager {
                 val userDoc = db.collection("zed_users").document(docId).get().await()
                 if (userDoc.exists()) {
                     val banned = userDoc.getBoolean("banned") ?: false
-                    val grantedKey = userDoc.getString("grantedVipKey") ?: ""
+                    val grantedVipKey = userDoc.getString("grantedVipKey") ?: ""
                     if (banned) {
                         _state.value = _state.value.copy(isBanned = true, isVipUnlocked = false)
-                    } else if (grantedKey.isNotBlank() && !_state.value.isVipUnlocked) {
+                    } else if (grantedVipKey.isNotBlank() && !_state.value.isVipUnlocked) {
                         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
-                            .putString(KEY_CODE, grantedKey)
+                            .putString(KEY_CODE, grantedVipKey)
                             .apply()
-                        _state.value = _state.value.copy(isVipUnlocked = true, activeKey = grantedKey)
+                        _state.value = _state.value.copy(isVipUnlocked = true, activeKey = grantedVipKey)
                     }
                 }
             }
@@ -157,7 +157,7 @@ object NexaLicenseManager {
             if (banned) {
                 _state.value = _state.value.copy(isBanned = true, isVipUnlocked = false, errorMessage = "Aapka account Admin dwara suspend kiya gaya hai.")
             } else if (grantedVipKey.isNotBlank() && !_state.value.isVipUnlocked) {
-                p.edit().putString(KEY_CODE, grantedKey).putString(KEY_CLIENT, cleanName).apply()
+                p.edit().putString(KEY_CODE, grantedVipKey).putString(KEY_CLIENT, cleanName).apply()
                 _state.value = _state.value.copy(isVipUnlocked = true, activeKey = grantedVipKey, clientName = cleanName)
             }
         }

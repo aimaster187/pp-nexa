@@ -420,8 +420,8 @@ fun NexaTopBar(
 
 enum class NexaTab(val label: String) {
   HOME("Home"),
-  AGENTS("Agents"),
-  CONTROL("Control"),
+  AGENTS("Scan"),
+  CONTROL("Settings"),
   CHAT("Yaadein"),
   TRANSCRIBE("Transcribe"),
 }
