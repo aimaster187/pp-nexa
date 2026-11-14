@@ -160,7 +160,7 @@ fun ZedSubRouteScreen(
 
                     SettingsCard {
                         Text("Tumhara naam", fontSize = 16.sp, fontWeight = FontWeight.Medium, color = textDark)
-                        Text("ZED tumhe kya bulaye (khaali = "dost")", fontSize = 12.sp, color = textSub)
+                        Text("ZED tumhe kya bulaye (khaali = 'dost')", fontSize = 12.sp, color = textSub)
                         Spacer(modifier = Modifier.height(8.dp))
                         OutlinedTextField(value = bossName, onValueChange = { bossName = it; prefs.edit().putString("boss_name", it).apply() }, textStyle = TextStyle(color = textDark, fontSize = 14.sp), shape = RoundedCornerShape(14.dp), modifier = Modifier.fillMaxWidth())
                     }

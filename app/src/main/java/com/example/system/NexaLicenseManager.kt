@@ -123,6 +123,15 @@ object NexaLicenseManager {
     fun saveUserPhone(context: Context, phone: String) {}
     suspend fun activateKey(context: Context, key: String): Boolean = verifyAndActivateKey(context, key)
 
+
+    fun logoutKey(context: Context) {
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
+            .remove(KEY_CODE)
+            .remove(KEY_CLIENT)
+            .apply()
+        _state.value = _state.value.copy(isVipUnlocked = false, activeKey = "", clientName = "")
+    }
+
     fun logoutUser(context: Context) {
         val p = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
         p.edit().putBoolean(KEY_LOGGED_IN, false).apply()
