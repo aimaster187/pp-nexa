@@ -380,10 +380,6 @@ fun NexaMainWorkspace(
     },
     onOpenApiKeys = { showApiKeysSheet = true },
     onOpenHistoryFeed = { showNotificationsDialog = true },
-    onOpenSettings = { activeSubRoute = "settings"; showZedBrowser = false },
-                onOpenAgents = { activeSubRoute = "agents_hub"; showZedBrowser = false },
-                onOpenBrowser = { activeSubRoute = null; showZedBrowser = true },
-                onOpenUpgrade = { activeSubRoute = "upgrade"; showZedBrowser = false },
                 onSignOut = { performSignOut() },
   ) { showHamburgerButton ->
     Box(
@@ -597,7 +593,6 @@ fun NexaMainWorkspace(
                   onOpenApiKeys = { showApiKeysSheet = true },
                   isOrbMuted = isOrbMuted,
                   onToggleMuteOrb = { isOrbMuted = !isOrbMuted },
-                  onOpenBrowser = { showZedBrowser = true },
                   onOpenSubRoute = { activeSubRoute = it },
                   isFreeTrialActive = !licState.isVipUnlocked,
                   freeSecondsRemaining = freeSecondsRemaining,

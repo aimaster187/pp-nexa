@@ -24,10 +24,14 @@ import kotlin.math.sin
 fun NeuralCoreOrb3D(
     modifier: Modifier = Modifier,
     size: Dp = 225.dp,
+    orbSize: Dp? = null,
     isListening: Boolean = false,
     isSpeaking: Boolean = false,
+    isBusy: Boolean = false,
+    accessibilityActive: Boolean = false,
     accentColor: Color = Color(0xFF2563EB)
 ) {
+    val effectiveSize = orbSize ?: size
     val infinite = rememberInfiniteTransition(label = "orb_5d")
     val spinOuter by infinite.animateFloat(
         initialValue = 0f, targetValue = 360f,
@@ -50,8 +54,8 @@ fun NeuralCoreOrb3D(
         else -> accentColor
     }
 
-    Box(modifier = modifier.size(size), contentAlignment = Alignment.Center) {
-        Canvas(modifier = Modifier.size(size)) {
+    Box(modifier = modifier.size(effectiveSize), contentAlignment = Alignment.Center) {
+        Canvas(modifier = Modifier.size(effectiveSize)) {
             val c = Offset(this.size.width / 2f, this.size.height / 2f)
             val baseR = (this.size.minDimension / 2f) * 0.78f * pulse
 

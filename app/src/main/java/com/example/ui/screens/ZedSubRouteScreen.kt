@@ -579,11 +579,11 @@ fun ZedSubRouteScreen(
                         SettingsRowItem(Icons.Default.RecordVoiceOver, "Voice Wake Commander", "Always-ready agent triggered by Hey ZED / Alexa") {
                             onSendQuickPrompt("Activate voice wake commander")
                         }
-                        HorizontalDivider(color = dividerCol)
+                        HorizontalDivider(color = Color(0xFFD6E2F5))
                         SettingsRowItem(Icons.Default.InstallMobile, "App Installer & Navigator", "Opens Play Store & automates app actions") {
                             onOpenRoute("accessibility")
                         }
-                        HorizontalDivider(color = dividerCol)
+                        HorizontalDivider(color = Color(0xFFD6E2F5))
                         SettingsRowItem(Icons.Default.MarkEmailUnread, "WhatsApp & OTP Auto-Reply", "Smart auto-reply & OTP reader rules") {
                             onOpenRoute("whatsapp")
                         }
