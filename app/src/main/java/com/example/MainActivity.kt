@@ -380,7 +380,11 @@ fun NexaMainWorkspace(
     },
     onOpenApiKeys = { showApiKeysSheet = true },
     onOpenHistoryFeed = { showNotificationsDialog = true },
-    onSignOut = { performSignOut() },
+    onOpenSettings = { activeSubRoute = "settings"; showZedBrowser = false },
+                onOpenAgents = { activeSubRoute = "agents_hub"; showZedBrowser = false },
+                onOpenBrowser = { activeSubRoute = null; showZedBrowser = true },
+                onOpenUpgrade = { activeSubRoute = "upgrade"; showZedBrowser = false },
+                onSignOut = { performSignOut() },
   ) { showHamburgerButton ->
     Box(
       modifier = Modifier.fillMaxSize().background(Brush.verticalGradient(bgColors))
@@ -670,6 +674,7 @@ fun NexaMainWorkspace(
   }
 
   if (showApiKeysSheet) { showApiKeysSheet = false; activeSubRoute = "personal" }
+  if (false) { showApiKeysSheet = false; activeSubRoute = "personal" }
   if (false) {
     ApiKeysVaultSheet(
       secrets = secrets,

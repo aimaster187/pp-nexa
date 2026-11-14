@@ -74,6 +74,7 @@ fun ZedSubRouteScreen(
         "scanner" -> "Scanner"
         "rules" -> "ZED ke rules"
         "yaadein" -> "Yaadein"
+        "agents_hub" -> "Agents & Auto-Reply"
         "pc_phone" -> "PC ⇄ Phone"
         "upgrade" -> "License"
         "about" -> "About ZED AI"
@@ -570,6 +571,22 @@ fun ZedSubRouteScreen(
                         Text("ZED AI v3.8.0: 5D Quantum Core & Google Auth Live", fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = textDark)
                         Spacer(modifier = Modifier.height(6.dp))
                         Text("by The Titan AI • Chief Developer: Pranav Patel. Ab aap roz 10 minute FREE trial ya VIP License Key ke saath poora system chala sakte hain.", fontSize = 13.sp, color = textSub)
+                    }
+                }
+
+                "agents_hub" -> {
+                    SettingsCard {
+                        SettingsRowItem(Icons.Default.RecordVoiceOver, "Voice Wake Commander", "Always-ready agent triggered by Hey ZED / Alexa") {
+                            onSendQuickPrompt("Activate voice wake commander")
+                        }
+                        HorizontalDivider(color = dividerCol)
+                        SettingsRowItem(Icons.Default.InstallMobile, "App Installer & Navigator", "Opens Play Store & automates app actions") {
+                            onOpenRoute("accessibility")
+                        }
+                        HorizontalDivider(color = dividerCol)
+                        SettingsRowItem(Icons.Default.MarkEmailUnread, "WhatsApp & OTP Auto-Reply", "Smart auto-reply & OTP reader rules") {
+                            onOpenRoute("whatsapp")
+                        }
                     }
                 }
 

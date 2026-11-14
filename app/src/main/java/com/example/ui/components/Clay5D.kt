@@ -3,7 +3,6 @@ package com.example.ui.components
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -14,7 +13,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
@@ -53,7 +51,6 @@ fun Clay5DSurface(
         label = "clay5d_tilt"
     )
 
-    val shape = RoundedCornerShape(cornerRadius)
     val rimBrush = Brush.linearGradient(
         colors = listOf(
             Color.White.copy(alpha = 0.95f),
@@ -81,7 +78,7 @@ fun Clay5DSurface(
         )
 
     Surface(
-        shape = shape,
+        shape = RoundedCornerShape(cornerRadius),
         color = Color.Transparent,
         shadowElevation = elevation,
         border = BorderStroke(1.3.dp, rimBrush),
@@ -90,11 +87,7 @@ fun Clay5DSurface(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(
-                    Brush.verticalGradient(
-                        listOf(Clay5DCardTop, Clay5DCardBot)
-                    )
-                )
+                .background(Brush.verticalGradient(listOf(Clay5DCardTop, Clay5DCardBot)))
                 .padding(16.dp),
             content = content
         )
@@ -105,7 +98,7 @@ fun Clay5DSurface(
 fun Clay5DOrbButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    size: Dp = 46.dp,
+    size: Dp = 44.dp,
     content: @Composable BoxScope.() -> Unit
 ) {
     val interactionSource = remember { MutableInteractionSource() }
@@ -121,21 +114,13 @@ fun Clay5DOrbButton(
         shape = CircleShape,
         color = Color.Transparent,
         shadowElevation = 12.dp,
-        border = BorderStroke(
-            1.4.dp,
-            Brush.linearGradient(listOf(Color.White, Color(0xFF93C5FD)))
-        ),
+        border = BorderStroke(1.4.dp, Brush.linearGradient(listOf(Color.White, Color(0xFF93C5FD)))),
         modifier = modifier.size(size).scale(scale)
     ) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(
-                    Brush.radialGradient(
-                        listOf(Color.White, Color(0xFFE6EFFD)),
-                        radius = 90f
-                    )
-                ),
+                .background(Brush.radialGradient(listOf(Color.White, Color(0xFFE6EFFD)), radius = 90f)),
             contentAlignment = Alignment.Center,
             content = content
         )
