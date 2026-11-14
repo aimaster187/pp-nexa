@@ -84,7 +84,7 @@ import com.example.ui.screens.AgentsControlScreen
 import com.example.ui.screens.ApiKeysVaultSheet
 import com.example.ui.screens.AudioTranscribeScreen
 import com.example.ui.screens.AuthScreen
-import com.example.ui.screens.HomeOrbScreen
+import com.example.ui.screens.ZedTenDHomeScreen
 import com.example.ui.screens.MemoryChatScreen
 import com.example.ui.screens.PhoneControlConsoleScreen
 import androidx.compose.material3.OutlinedTextField
@@ -572,31 +572,41 @@ fun NexaMainWorkspace(
                   onClose = { showZedBrowser = false }
                 )
               } else {
-                HomeOrbScreen(
-                  profile = profile,
-                  agents = agents,
-                  selectedAgentId = selectedAgentId,
-                  permissions = permissions,
-                  secrets = secrets,
-                  commandUiState = commandUiState,
-                  wakeStatus = wakeStatus,
-                  wakeRunning = wakeRunning,
-                  lastOtp = lastOtp,
-                  isVoiceListening = (continuousVoiceLocked && !isOrbMuted) || showVoiceTriggerDialog,
-                  onOrbVoiceClick = { isOrbMuted = !isOrbMuted },
-                  onSendCommand = { viewModel.sendCommand(it) },
-                  onSendVisionCommand = { prompt, bytes, mime ->
-                    viewModel.sendCommand(prompt, imageBytes = bytes, imageMimeType = mime)
+                ZedTenDHomeScreen(
+                  userName = profile?.bossName?.takeIf { it.isNotBlank() }
+                    ?: userDisplayName.ifBlank { "Commander" },
+                  onVoiceClick = {
+                    isOrbMuted = false
+                    continuousVoiceLocked = !continuousVoiceLocked
                   },
-                  onSelectAgent = { viewModel.selectAgent(it) },
-                  onNavigateTab = { selectedTab = it },
-                  onOpenApiKeys = { showApiKeysSheet = true },
-                  onOpenBrowser = { showZedBrowser = true },
-                  isOrbMuted = isOrbMuted,
-                  onToggleMuteOrb = { isOrbMuted = !isOrbMuted },
-                  onOpenSubRoute = { activeSubRoute = it },
-                  isFreeTrialActive = !licState.isVipUnlocked,
-                  freeSecondsRemaining = freeSecondsRemaining,
+                  onFeatureClick = { feature ->
+                    when (feature) {
+                      "agents" -> {
+                        activeSubRoute = "agents_hub"
+                      }
+                      "phone" -> {
+                        activeSubRoute = "pc_phone"
+                      }
+                      "browser" -> {
+                        showZedBrowser = true
+                      }
+                      "memory" -> {
+                        selectedTab = NexaTab.CHAT
+                      }
+                      "voice" -> {
+                        selectedTab = NexaTab.TRANSCRIBE
+                      }
+                      "vault" -> {
+                        showApiKeysSheet = true
+                      }
+                      "automations" -> {
+                        activeSubRoute = "automations"
+                      }
+                      "upgrade" -> {
+                        activeSubRoute = "upgrade"
+                      }
+                    }
+                  }
                 )
               }
             }
