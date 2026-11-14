@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.sp
 import com.example.data.model.*
 import com.example.ui.CommandUiState
 import com.example.ui.components.NexaTab
+import com.example.ui.components.NeuralCoreOrb3D
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
@@ -157,129 +158,32 @@ fun HomeOrbScreen(
 
         Spacer(modifier = Modifier.height(6.dp))
 
-        // 5D HOLOGRAPHIC QUANTUM CORE ORB -> TAP TO MUTE / UNMUTE
+        // 5D metallic holographic neural core. Tap to mute/unmute voice.
         Box(
-            modifier = Modifier.size(240.dp).clickable { onToggleMuteOrb() },
+            modifier = Modifier.size(260.dp).clickable { onToggleMuteOrb() },
             contentAlignment = Alignment.Center
         ) {
-            Canvas(modifier = Modifier.fillMaxSize()) {
-                val center = Offset(size.width / 2f, size.height / 2f)
-                val baseRadius = size.minDimension * 0.28f * pulseScale
-                val primaryGlow = when {
-                    isOrbMuted -> Color(0xFF94A3B8)
-                    activeAudio -> Color(0xFFFF2E7E)
-                    else -> Color(0xFF2563EB)
-                }
-                val secondaryGlow = when {
-                    isOrbMuted -> Color(0xFFCBD5E1)
-                    activeAudio -> Color(0xFF8B5CF6)
-                    else -> Color(0xFF06B6D4)
-                }
-
-                drawCircle(
-                    brush = Brush.radialGradient(
-                        colors = listOf(primaryGlow.copy(alpha = 0.36f), secondaryGlow.copy(alpha = 0.12f), Color.Transparent),
-                        center = center,
-                        radius = size.minDimension * 0.50f
-                    ),
-                    radius = size.minDimension * 0.50f,
-                    center = center
-                )
-
-                val tickCount = 64
-                for (i in 0 until tickCount) {
-                    val angleDeg = (i * (360f / tickCount)) + (orbRotation * 0.6f)
-                    val rad = Math.toRadians(angleDeg.toDouble())
-                    val waveBoost = if (activeAudio) (sin(Math.toRadians((i * 28f + orbRotation * 5f).toDouble())).toFloat() * 11f).coerceAtLeast(0f) else 2.5f
-                    val innerR = baseRadius + 14f
-                    val outerR = innerR + 13f + waveBoost
-                    drawLine(
-                        color = if (isOrbMuted) Color(0xFF94A3B8).copy(alpha = 0.45f)
-                        else if (i % 2 == 0) primaryGlow.copy(alpha = 0.85f) else secondaryGlow.copy(alpha = 0.75f),
-                        start = Offset(center.x + (cos(rad) * innerR).toFloat(), center.y + (sin(rad) * innerR).toFloat()),
-                        end = Offset(center.x + (cos(rad) * outerR).toFloat(), center.y + (sin(rad) * outerR).toFloat()),
-                        strokeWidth = 2.6f,
-                        cap = StrokeCap.Round
-                    )
-                }
-
-                val gyroRadius = baseRadius + 8f
-                drawArc(
-                    color = secondaryGlow.copy(alpha = 0.85f),
-                    startAngle = orbRotation,
-                    sweepAngle = 115f,
-                    useCenter = false,
-                    topLeft = Offset(center.x - gyroRadius, center.y - gyroRadius),
-                    size = Size(gyroRadius * 2f, gyroRadius * 2f),
-                    style = Stroke(width = 3.2f, cap = StrokeCap.Round)
-                )
-                drawArc(
-                    color = primaryGlow.copy(alpha = 0.9f),
-                    startAngle = counterRotation,
-                    sweepAngle = 135f,
-                    useCenter = false,
-                    topLeft = Offset(center.x - (gyroRadius + 4f), center.y - (gyroRadius + 4f)),
-                    size = Size((gyroRadius + 4f) * 2f, (gyroRadius + 4f) * 2f),
-                    style = Stroke(width = 2.5f, cap = StrokeCap.Round)
-                )
-
-                drawCircle(color = primaryGlow, radius = baseRadius + 3f, center = center)
-                drawCircle(
-                    brush = Brush.radialGradient(
-                        colors = listOf(Color(0xFF1E1B4B), Color(0xFF090D16), Color(0xFF03050A)),
-                        center = Offset(center.x - baseRadius * 0.25f, center.y - baseRadius * 0.25f),
-                        radius = baseRadius * 1.15f
-                    ),
-                    radius = baseRadius,
-                    center = center
-                )
-
-                val tiltFactor = (0.35f + 0.25f * sin(Math.toRadians(orbRotation.toDouble())).toFloat())
-                drawOval(
-                    color = secondaryGlow.copy(alpha = 0.35f),
-                    topLeft = Offset(center.x - baseRadius * 0.85f, center.y - baseRadius * tiltFactor),
-                    size = Size(baseRadius * 1.7f, baseRadius * 2f * tiltFactor),
-                    style = Stroke(width = 1.6f)
-                )
-                drawOval(
-                    color = primaryGlow.copy(alpha = 0.35f),
-                    topLeft = Offset(center.x - baseRadius * tiltFactor, center.y - baseRadius * 0.85f),
-                    size = Size(baseRadius * 2f * tiltFactor, baseRadius * 1.7f),
-                    style = Stroke(width = 1.6f)
-                )
-
-                val nodeCount = 24
-                val nodes = (0 until nodeCount).map { idx ->
-                    val a = Math.toRadians((idx * (360.0 / nodeCount)) + orbRotation * 1.2)
-                    val r = baseRadius * (0.25f + 0.56f * ((idx % 4) / 3f))
-                    Offset(center.x + (cos(a) * r).toFloat(), center.y + (sin(a) * r).toFloat())
-                }
-                for (i in nodes.indices) {
-                    val next = nodes[(i + 3) % nodes.size]
-                    drawLine(
-                        color = if (isOrbMuted) Color(0xFF64748B).copy(alpha = 0.3f) else Color(0xFFFBBF24).copy(alpha = 0.55f),
-                        start = nodes[i],
-                        end = next,
-                        strokeWidth = 1.5f
-                    )
-                    drawCircle(color = if (isOrbMuted) Color(0xFF94A3B8) else Color(0xFFFEF08A), radius = 3.3f, center = nodes[i])
-                }
-
-                drawCircle(
-                    brush = Brush.radialGradient(
-                        colors = listOf(Color.White.copy(alpha = 0.34f), Color.Transparent),
-                        center = Offset(center.x - baseRadius * 0.38f, center.y - baseRadius * 0.38f),
-                        radius = baseRadius * 0.42f
-                    ),
-                    radius = baseRadius * 0.42f,
-                    center = Offset(center.x - baseRadius * 0.38f, center.y - baseRadius * 0.38f)
-                )
-            }
-
+            NeuralCoreOrb3D(
+                modifier = Modifier.fillMaxSize(),
+                size = 260.dp,
+                isListening = isVoiceListening && !isOrbMuted,
+                isBusy = commandUiState is CommandUiState.Thinking,
+                accessibilityActive = permissions.accessibilityEnabled,
+                accentColor = if (isOrbMuted) Color(0xFF94A3B8) else Color(0xFF2563EB)
+            )
             if (isOrbMuted) {
-                Surface(shape = CircleShape, color = Color(0xDD0F172A), modifier = Modifier.size(46.dp)) {
+                Surface(
+                    shape = CircleShape,
+                    color = Color(0xDD0F172A),
+                    modifier = Modifier.size(46.dp)
+                ) {
                     Box(contentAlignment = Alignment.Center) {
-                        Icon(Icons.Default.VolumeOff, contentDescription = "Muted", tint = Color(0xFFFF4D8D), modifier = Modifier.size(22.dp))
+                        Icon(
+                            Icons.Default.VolumeOff,
+                            contentDescription = "Muted",
+                            tint = Color(0xFFFF4D8D),
+                            modifier = Modifier.size(22.dp)
+                        )
                     }
                 }
             }

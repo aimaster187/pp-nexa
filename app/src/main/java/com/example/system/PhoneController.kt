@@ -222,11 +222,7 @@ class PhoneController(private val context: Context) {
       }
     return try {
       context.startActivity(intent)
-      if (a11y != null) {
-        delay(1400L)
-        a11y.tapNodeByText("Send")
-      }
-      "Opened WhatsApp message flow"
+      "Opened WhatsApp with the message filled. Review the recipient and message, then tap Send yourself."
     } catch (_: Exception) {
       "WhatsApp not installed on this device"
     }

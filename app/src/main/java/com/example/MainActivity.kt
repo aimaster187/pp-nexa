@@ -591,6 +591,7 @@ fun NexaMainWorkspace(
                   onSelectAgent = { viewModel.selectAgent(it) },
                   onNavigateTab = { selectedTab = it },
                   onOpenApiKeys = { showApiKeysSheet = true },
+                  onOpenBrowser = { showZedBrowser = true },
                   isOrbMuted = isOrbMuted,
                   onToggleMuteOrb = { isOrbMuted = !isOrbMuted },
                   onOpenSubRoute = { activeSubRoute = it },
@@ -668,9 +669,7 @@ fun NexaMainWorkspace(
     )
   }
 
-  if (showApiKeysSheet) { showApiKeysSheet = false; activeSubRoute = "personal" }
-  if (false) { showApiKeysSheet = false; activeSubRoute = "personal" }
-  if (false) {
+  if (showApiKeysSheet) {
     ApiKeysVaultSheet(
       secrets = secrets,
       bossName = profile?.bossName ?: "BOSS",
