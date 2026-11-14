@@ -74,7 +74,7 @@ fun ZedNavigationDrawerContent(
                 DrawerPillButton("Notifications", Icons.Default.Notifications, activeRoute == "notifications") { onSelectRoute("notifications"); onCloseDrawer() }
             }
 
-            Text("v4.0.0  •  The Titan AI", fontSize = 11.sp, color = Color(0xFF64748B), modifier = Modifier.padding(top = 8.dp, start = 4.dp))
+            Text("v5.0.0  •  The Titan AI", fontSize = 11.sp, color = Color(0xFF64748B), modifier = Modifier.padding(top = 8.dp, start = 4.dp))
         }
     }
 }

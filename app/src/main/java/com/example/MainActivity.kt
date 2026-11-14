@@ -669,7 +669,8 @@ fun NexaMainWorkspace(
     )
   }
 
-  if (showApiKeysSheet) {
+  if (showApiKeysSheet) { showApiKeysSheet = false; activeSubRoute = "personal" }
+  if (false) {
     ApiKeysVaultSheet(
       secrets = secrets,
       bossName = profile?.bossName ?: "BOSS",

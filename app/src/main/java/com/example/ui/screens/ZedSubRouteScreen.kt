@@ -648,7 +648,7 @@ fun ZedSubRouteScreen(
                             Icon(Icons.Default.Favorite, contentDescription = null, tint = Color(0xFF2563EB), modifier = Modifier.size(36.dp))
                             Spacer(modifier = Modifier.height(6.dp))
                             Text(if (licState.isVipUnlocked) "ZED Pro Max active hai" else "ZED AI VIP License", fontSize = 18.sp, fontWeight = FontWeight.Medium, color = textDark)
-                            Text("by The Titan AI • v4.0.0", fontSize = 12.sp, color = Color(0xFF2563EB))
+                            Text("by The Titan AI • v5.0.0", fontSize = 12.sp, color = Color(0xFF2563EB))
                             Spacer(modifier = Modifier.height(10.dp))
                             OutlinedTextField(value = vipInput, onValueChange = { vipInput = it.uppercase() }, label = { Text("Enter ZED-VIP-XXXX-XXXX Key") }, textStyle = TextStyle(color = textDark, fontWeight = FontWeight.Bold), shape = RoundedCornerShape(14.dp), modifier = Modifier.fillMaxWidth())
                             Spacer(modifier = Modifier.height(8.dp))
