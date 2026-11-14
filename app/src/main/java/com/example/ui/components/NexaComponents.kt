@@ -119,7 +119,7 @@ private fun DockTabItem(label: String, icon: ImageVector, selected: Boolean, onC
 
 
 enum class NexaTab {
-    HOME, AGENTS, CONTROL, TRANSCRIBE
+    HOME, AGENTS, CONTROL, TRANSCRIBE, CHAT
 }
 
 @Composable
@@ -193,5 +193,32 @@ fun NexaTopBar(
                 )
             }
         }
+    }
+}
+
+
+@Composable
+fun NexaGlassCard(
+    modifier: Modifier = Modifier,
+    accentColor: Color = Color(0xFF2563EB),
+    content: @Composable ColumnScope.() -> Unit
+) {
+    Surface(
+        shape = RoundedCornerShape(24.dp),
+        color = Color(0xFFF4F8FF),
+        shadowElevation = 10.dp,
+        modifier = modifier
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    Brush.verticalGradient(
+                        listOf(Color(0xFFF9FBFF), Color(0xFFEAF1FC))
+                    )
+                )
+                .padding(16.dp),
+            content = content
+        )
     }
 }
