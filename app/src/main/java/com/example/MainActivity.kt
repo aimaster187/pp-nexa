@@ -444,7 +444,7 @@ fun NexaMainWorkspace(
               }
               if (licState.isBanned) {
                 Box(
-                  modifier = Modifier.fillMaxSize().background(androidx.compose.ui.graphics.Color(0xFF060913)).padding(24.dp),
+                  modifier = Modifier.fillMaxSize().background(androidx.compose.ui.graphics.Color(0xFFEAF1FC)).padding(24.dp),
                   contentAlignment = androidx.compose.ui.Alignment.Center
                 ) {
                   Column(horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally) {
