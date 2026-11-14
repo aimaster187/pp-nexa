@@ -92,7 +92,8 @@ private fun DrawerPillButton(label: String, icon: ImageVector, selected: Boolean
         onClick = onClick,
         shape = RoundedCornerShape(18.dp),
         color = Color.Transparent,
-        shadowElevation = if (selected) 8.dp else 5.dp,
+        shadowElevation = if (selected) 14.dp else 9.dp,
+        border = androidx.compose.foundation.BorderStroke(1.2.dp, Brush.linearGradient(listOf(Color.White, Color(0xFF93C5FD)))),
         modifier = Modifier.fillMaxWidth().height(48.dp)
     ) {
         Row(modifier = Modifier.fillMaxSize().background(bgBrush).padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {

@@ -89,14 +89,14 @@ fun ZedSubRouteScreen(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Surface(onClick = onBack, shape = CircleShape, color = cardColor, shadowElevation = 14.dp, modifier = Modifier.size(44.dp)) {
+                Surface(onClick = onBack, shape = CircleShape, color = cardColor, shadowElevation = 16.dp, border = androidx.compose.foundation.BorderStroke(1.3.dp, Brush.linearGradient(listOf(Color.White, Color(0xFF93C5FD)))), modifier = Modifier.size(44.dp)) {
                     Box(contentAlignment = Alignment.Center) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = textDark) }
                 }
                 Spacer(modifier = Modifier.width(14.dp))
                 Text(screenTitle, fontSize = 23.sp, fontWeight = FontWeight.Light, color = textDark)
             }
 
-            Surface(onClick = { onOpenRoute("notifications") }, shape = CircleShape, color = cardColor, shadowElevation = 14.dp, modifier = Modifier.size(44.dp)) {
+            Surface(onClick = { onOpenRoute("notifications") }, shape = CircleShape, color = cardColor, shadowElevation = 16.dp, border = androidx.compose.foundation.BorderStroke(1.3.dp, Brush.linearGradient(listOf(Color.White, Color(0xFF93C5FD)))), modifier = Modifier.size(44.dp)) {
                 Box(contentAlignment = Alignment.Center) { Icon(Icons.Default.NotificationsNone, contentDescription = "Alerts", tint = textDark) }
             }
         }

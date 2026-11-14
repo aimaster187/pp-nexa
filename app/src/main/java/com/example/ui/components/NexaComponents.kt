@@ -203,22 +203,11 @@ fun NexaGlassCard(
     accentColor: Color = Color(0xFF2563EB),
     content: @Composable ColumnScope.() -> Unit
 ) {
-    Surface(
-        shape = RoundedCornerShape(24.dp),
-        color = Color(0xFFF4F8FF),
-        shadowElevation = 10.dp,
-        modifier = modifier
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(
-                    Brush.verticalGradient(
-                        listOf(Color(0xFFF9FBFF), Color(0xFFEAF1FC))
-                    )
-                )
-                .padding(16.dp),
-            content = content
-        )
-    }
+    Clay5DSurface(
+        modifier = modifier,
+        cornerRadius = 26.dp,
+        elevation = 14.dp,
+        glowColor = accentColor,
+        content = content
+    )
 }
