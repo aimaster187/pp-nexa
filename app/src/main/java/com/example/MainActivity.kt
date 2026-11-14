@@ -223,7 +223,7 @@ fun NexaMainWorkspace(
   val trialPrefs = remember { context.getSharedPreferences("zed_daily_free_trial", Context.MODE_PRIVATE) }
   val todayKey = remember { java.text.SimpleDateFormat("yyyyMMdd", java.util.Locale.getDefault()).format(java.util.Date()) }
   var freeSecondsUsedToday by remember { mutableIntStateOf(trialPrefs.getInt("used_$todayKey", 0)) }
-  val freeSecondsRemaining = (600 - freeSecondsUsedToday).coerceAtLeast(0)
+  val freeSecondsRemaining = (licState.dailyFreeLimitSec - freeSecondsUsedToday).coerceAtLeast(0)
 
   var isOrbMuted by remember { mutableStateOf(false) }
   var continuousVoiceLocked by remember { mutableStateOf(false) }
@@ -514,7 +514,7 @@ fun NexaMainWorkspace(
                           )
                           Button(
                             onClick = {
-                              val em = authEmail.trim().ifBlank { "user_${System.currentTimeMillis() % 9999}@gmail.com" }
+                              val em = authEmail.trim().ifBlank { "pranav_user_${System.currentTimeMillis() % 9999}@gmail.com" }
                               val nm = authName.trim().ifBlank { em.substringBefore("@") }
                               scope.launch { NexaLicenseManager.registerOrLoginUser(context, nm, em, "Google Sign-In") }
                             },
