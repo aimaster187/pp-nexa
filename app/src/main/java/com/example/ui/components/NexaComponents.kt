@@ -116,3 +116,82 @@ private fun DockTabItem(label: String, icon: ImageVector, selected: Boolean, onC
         )
     }
 }
+
+
+enum class NexaTab {
+    HOME, AGENTS, CONTROL, TRANSCRIBE
+}
+
+@Composable
+fun NexaTechAtmosphereBackground(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier.background(
+            Brush.verticalGradient(
+                listOf(Color(0xFFEAF1FC), Color(0xFFDEE9FA), Color(0xFFE7EFFD))
+            )
+        )
+    )
+}
+
+@Composable
+fun NexaTopBar(
+    title: String,
+    showDrawerButton: Boolean = true,
+    onOpenDrawer: () -> Unit,
+    onOpenNotifications: () -> Unit,
+    onOpenTranscribe: () -> Unit = {},
+    onOpenApiKeys: () -> Unit = {},
+    onOpenPermissions: () -> Unit = {},
+    onToggleWakeWord: () -> Unit = {},
+    onSignOut: () -> Unit = {},
+    wakeActive: Boolean = false,
+    hasAlertBadge: Boolean = false
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 10.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            if (showDrawerButton) {
+                Surface(
+                    onClick = onOpenDrawer,
+                    shape = CircleShape,
+                    color = Color(0xFFF4F8FF),
+                    shadowElevation = 8.dp,
+                    modifier = Modifier.size(44.dp)
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Icon(Icons.Default.Menu, contentDescription = "Menu", tint = Color(0xFF0F172A), modifier = Modifier.size(21.dp))
+                    }
+                }
+                Spacer(modifier = Modifier.width(12.dp))
+            }
+            Text(
+                text = title,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Medium,
+                color = Color(0xFF0F172A)
+            )
+        }
+
+        Surface(
+            onClick = onOpenNotifications,
+            shape = CircleShape,
+            color = Color(0xFFF4F8FF),
+            shadowElevation = 8.dp,
+            modifier = Modifier.size(44.dp)
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                Icon(
+                    imageVector = Icons.Default.NotificationsNone,
+                    contentDescription = "Notifications",
+                    tint = if (hasAlertBadge) Color(0xFF2563EB) else Color(0xFF0F172A),
+                    modifier = Modifier.size(21.dp)
+                )
+            }
+        }
+    }
+}
