@@ -20,6 +20,11 @@ import androidx.compose.ui.unit.dp
 import kotlin.math.cos
 import kotlin.math.sin
 
+/**
+ * ZED V1 animated neural core.
+ * A layered Compose-rendered visual (not a true 3D model); uses highlights,
+ * elliptical energy bands, metallic gradients and state-aware animation.
+ */
 @Composable
 fun NeuralCoreOrb3D(
     modifier: Modifier = Modifier,
@@ -32,88 +37,130 @@ fun NeuralCoreOrb3D(
     accentColor: Color = Color(0xFF2563EB)
 ) {
     val effectiveSize = orbSize ?: size
-    val infinite = rememberInfiniteTransition(label = "orb_5d")
+    val infinite = rememberInfiniteTransition(label = "zed_neural_v1")
     val spinOuter by infinite.animateFloat(
         initialValue = 0f, targetValue = 360f,
-        animationSpec = infiniteRepeatable(tween(9000, easing = LinearEasing)), label = "spin_outer"
+        animationSpec = infiniteRepeatable(tween(14000, easing = LinearEasing)), label = "outer"
     )
     val spinInner by infinite.animateFloat(
         initialValue = 360f, targetValue = 0f,
-        animationSpec = infiniteRepeatable(tween(5500, easing = LinearEasing)), label = "spin_inner"
+        animationSpec = infiniteRepeatable(tween(9000, easing = LinearEasing)), label = "inner"
     )
     val pulse by infinite.animateFloat(
-        initialValue = 0.94f,
-        targetValue = if (isListening || isSpeaking) 1.09f else 1.02f,
-        animationSpec = infiniteRepeatable(tween(1100, easing = FastOutSlowInEasing), RepeatMode.Reverse),
-        label = "pulse_5d"
+        initialValue = 0.97f,
+        targetValue = if (isListening || isSpeaking || isBusy) 1.045f else 1.015f,
+        animationSpec = infiniteRepeatable(
+            tween(if (isListening || isSpeaking || isBusy) 650 else 1900, easing = FastOutSlowInEasing),
+            RepeatMode.Reverse
+        ),
+        label = "pulse"
     )
-
-    val coreColor = when {
-        isListening -> Color(0xFFE11D48)
-        isSpeaking -> Color(0xFF0EA5E9)
+    val core = when {
+        isListening -> Color(0xFF0EA5E9)
+        isSpeaking -> Color(0xFF2563EB)
+        isBusy -> Color(0xFF7657E8)
         else -> accentColor
     }
 
     Box(modifier = modifier.size(effectiveSize), contentAlignment = Alignment.Center) {
         Canvas(modifier = Modifier.size(effectiveSize)) {
             val c = Offset(this.size.width / 2f, this.size.height / 2f)
-            val baseR = (this.size.minDimension / 2f) * 0.78f * pulse
+            val r = this.size.minDimension * 0.34f * pulse
 
+            // Soft blue aura on the white canvas.
             drawCircle(
                 brush = Brush.radialGradient(
-                    listOf(coreColor.copy(alpha = 0.34f), Color(0xFF38BDF8).copy(alpha = 0.16f), Color.Transparent),
-                    center = c, radius = baseR * 1.32f
+                    listOf(core.copy(alpha = 0.20f), Color(0xFF93C5FD).copy(alpha = 0.10f), Color.Transparent),
+                    center = c, radius = r * 2.05f
                 ),
-                radius = baseR * 1.32f, center = c
+                radius = r * 2.05f, center = c
             )
 
+            // Outer metallic orbit with a subtle silver under-ring.
+            drawCircle(
+                color = Color(0xFFB8C4D6).copy(alpha = 0.62f),
+                radius = r * 1.68f, center = c,
+                style = Stroke(width = r * 0.075f)
+            )
             rotate(spinOuter, pivot = c) {
-                for (i in 0 until 36) {
-                    val rad = Math.toRadians((i * 10).toDouble())
-                    val r1 = baseR * 1.08f
-                    val r2 = if (i % 3 == 0) baseR * 1.18f else baseR * 1.13f
+                drawArc(
+                    brush = Brush.sweepGradient(
+                        listOf(Color(0xFFDBEAFE), core, Color.White, Color(0xFF93C5FD), core)
+                    ),
+                    startAngle = 205f, sweepAngle = 285f, useCenter = false,
+                    topLeft = Offset(c.x - r * 1.68f, c.y - r * 1.68f),
+                    size = Size(r * 3.36f, r * 3.36f),
+                    style = Stroke(width = r * 0.085f, cap = StrokeCap.Round)
+                )
+                for (i in 0 until 48) {
+                    val a = Math.toRadians(i * 7.5)
+                    val inner = r * 1.79f
+                    val outer = if (i % 4 == 0) r * 1.98f else r * 1.88f
                     drawLine(
-                        color = if (i % 3 == 0) coreColor.copy(alpha = 0.85f) else Color(0xFF60A5FA).copy(alpha = 0.45f),
-                        start = Offset(c.x + (r1 * cos(rad)).toFloat(), c.y + (r1 * sin(rad)).toFloat()),
-                        end = Offset(c.x + (r2 * cos(rad)).toFloat(), c.y + (r2 * sin(rad)).toFloat()),
-                        strokeWidth = if (i % 3 == 0) 3.5f else 2f, cap = StrokeCap.Round
+                        color = if (i % 4 == 0) core.copy(alpha = 0.9f) else Color(0xFF94A3B8).copy(alpha = 0.45f),
+                        start = Offset(c.x + (inner * cos(a)).toFloat(), c.y + (inner * sin(a)).toFloat()),
+                        end = Offset(c.x + (outer * cos(a)).toFloat(), c.y + (outer * sin(a)).toFloat()),
+                        strokeWidth = if (i % 4 == 0) 2.6f else 1.4f,
+                        cap = StrokeCap.Round
                     )
                 }
             }
 
+            // Inner glass sphere: silver-white, deliberately not a black hole.
             drawCircle(
                 brush = Brush.radialGradient(
-                    listOf(Color(0xFF1E3A8A), Color(0xFF090E1A), Color(0xFF020617)),
-                    center = Offset(c.x - baseR * 0.25f, c.y - baseR * 0.25f), radius = baseR * 1.1f
+                    colors = listOf(Color.White, Color(0xFFF4F8FF), Color(0xFFDCE8F8), Color(0xFFB9D0F2)),
+                    center = Offset(c.x - r * 0.38f, c.y - r * 0.42f),
+                    radius = r * 1.75f
                 ),
-                radius = baseR * 0.88f, center = c
+                radius = r * 1.30f, center = c
+            )
+            drawCircle(
+                color = Color.White.copy(alpha = 0.95f),
+                radius = r * 1.17f, center = c,
+                style = Stroke(width = r * 0.035f)
             )
 
+            // Rotating inner energy bands.
             rotate(spinInner, pivot = c) {
                 drawArc(
-                    brush = Brush.sweepGradient(listOf(Color(0xFF38BDF8), coreColor, Color.White, Color(0xFF38BDF8))),
-                    startAngle = 0f, sweepAngle = 260f, useCenter = false,
-                    topLeft = Offset(c.x - baseR * 0.72f, c.y - baseR * 0.72f),
-                    size = Size(baseR * 1.44f, baseR * 1.44f),
-                    style = Stroke(width = 4.5f, cap = StrokeCap.Round)
+                    brush = Brush.sweepGradient(listOf(core, Color.White, Color(0xFF60A5FA), core)),
+                    startAngle = 15f, sweepAngle = 300f, useCenter = false,
+                    topLeft = Offset(c.x - r * 1.02f, c.y - r * 0.72f),
+                    size = Size(r * 2.04f, r * 1.44f),
+                    style = Stroke(width = r * 0.10f, cap = StrokeCap.Round)
                 )
-                for (k in 0 until 8) {
-                    val a = Math.toRadians((k * 45).toDouble())
-                    val nr = baseR * 0.52f
-                    drawCircle(
-                        color = Color(0xFFFDE047).copy(alpha = 0.85f), radius = 4.5f,
-                        center = Offset(c.x + (nr * cos(a)).toFloat(), c.y + (nr * sin(a)).toFloat())
-                    )
-                }
+                drawArc(
+                    color = Color(0xFF94A3B8).copy(alpha = 0.75f),
+                    startAngle = 195f, sweepAngle = 145f, useCenter = false,
+                    topLeft = Offset(c.x - r * 0.80f, c.y - r * 1.03f),
+                    size = Size(r * 1.60f, r * 2.06f),
+                    style = Stroke(width = r * 0.045f, cap = StrokeCap.Round)
+                )
             }
 
+            // Central neural nucleus and orbiting data nodes.
+            drawCircle(
+                brush = Brush.radialGradient(listOf(Color.White, core, Color(0xFF1D4ED8))),
+                radius = r * 0.28f, center = c
+            )
+            for (i in 0 until 8) {
+                val a = Math.toRadians(i * 45.0 + spinOuter * 0.35)
+                val nr = r * 0.78f
+                val p = Offset(c.x + (nr * cos(a)).toFloat(), c.y + (nr * sin(a)).toFloat())
+                drawCircle(Color.White.copy(alpha = 0.95f), radius = r * 0.075f, center = p)
+                drawCircle(core.copy(alpha = 0.85f), radius = r * 0.045f, center = p)
+            }
+
+            // Specular highlight.
             drawCircle(
                 brush = Brush.radialGradient(
-                    listOf(Color.White.copy(alpha = 0.55f), Color.Transparent),
-                    center = Offset(c.x - baseR * 0.32f, c.y - baseR * 0.34f), radius = baseR * 0.42f
+                    listOf(Color.White.copy(alpha = 0.95f), Color.White.copy(alpha = 0.0f)),
+                    center = Offset(c.x - r * 0.50f, c.y - r * 0.58f),
+                    radius = r * 0.60f
                 ),
-                radius = baseR * 0.42f,
-                center = Offset(c.x - baseR * 0.32f, c.y - baseR * 0.34f)
+                radius = r * 0.60f,
+                center = Offset(c.x - r * 0.50f, c.y - r * 0.58f)
             )
         }
     }

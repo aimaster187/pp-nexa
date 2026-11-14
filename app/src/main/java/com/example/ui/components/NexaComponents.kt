@@ -194,9 +194,9 @@ fun NexaFloatingBottomBar(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 DockTab5D("Home", Icons.Default.Home, selectedTab == NexaTab.HOME) { onSelectTab(NexaTab.HOME) }
-                DockTab5D("Scan", Icons.Default.QrCodeScanner, selectedTab == NexaTab.CONTROL) { onSelectTab(NexaTab.CONTROL) }
+                DockTab5D("Scan", Icons.Default.QrCodeScanner, selectedTab == NexaTab.AGENTS) { onSelectTab(NexaTab.AGENTS) }
                 Spacer(modifier = Modifier.width(64.dp))
-                DockTab5D("Yaadein", Icons.Default.Psychology, selectedTab == NexaTab.AGENTS) { onSelectTab(NexaTab.AGENTS) }
+                DockTab5D("Yaadein", Icons.Default.Psychology, selectedTab == NexaTab.CONTROL) { onSelectTab(NexaTab.CONTROL) }
                 DockTab5D("Chat", Icons.Default.ChatBubbleOutline, selectedTab == NexaTab.CHAT) { onSelectTab(NexaTab.CHAT) }
             }
         }

@@ -107,7 +107,7 @@ fun HomeOrbScreen(
         label = "pulse"
     )
 
-    val frostBg = Brush.verticalGradient(colors = listOf(Color(0xFFEAF1FC), Color(0xFFDCE7F9), Color(0xFFE5EEFC)))
+    val frostBg = Brush.verticalGradient(colors = listOf(Color.White, Color(0xFFFAFBFD), Color(0xFFF4F7FC)))
     val cardColor = Color(0xFFF4F8FF)
     val textDark = Color(0xFF0F172A)
     val textSub = Color(0xFF64748B)

@@ -1,0 +1,172 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global Default-Deny Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- Primitive Helpers ---
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidTimestamp(ts) {
+      return ts is timestamp && ts <= request.time;
+    }
+
+    // --- Validation Helpers ---
+    function isValidUserProfile(data) {
+      return data.userId is string &&
+             data.userId == request.auth.uid &&
+             data.bossName is string && data.bossName.size() >= 1 && data.bossName.size() <= 40 &&
+             data.wakeWords is list && data.wakeWords.size() <= 10 &&
+             (data.wakeWords.size() == 0 || (data.wakeWords[0] is string && data.wakeWords[0].size() <= 40)) &&
+             data.activeProvider in ['FIREBASE_GEMINI', 'CUSTOM_GEMINI', 'OPENAI', 'GROQ', 'CUSTOM_ENDPOINT'] &&
+             data.energyPoints is int && data.energyPoints >= 0 && data.energyPoints <= 99999 &&
+             data.moodStatus is string && data.moodStatus.size() >= 1 && data.moodStatus.size() <= 60 &&
+             isValidTimestamp(data.createdAt) &&
+             isValidTimestamp(data.updatedAt);
+    }
+
+    function isValidCustomAgent(data) {
+      return data.userId is string &&
+             data.userId == request.auth.uid &&
+             data.name is string && data.name.size() >= 1 && data.name.size() <= 60 &&
+             data.role is string && data.role.size() >= 1 && data.role.size() <= 120 &&
+             data.systemPrompt is string && data.systemPrompt.size() >= 1 && data.systemPrompt.size() <= 2000 &&
+             data.triggerType in ['MANUAL', 'WHATSAPP_INCOMING', 'GMAIL_INCOMING', 'OTP_EVENT', 'VOICE_WAKE', 'SCHEDULED'] &&
+             data.allowedTools is list && data.allowedTools.size() <= 12 &&
+             (data.allowedTools.size() == 0 || (data.allowedTools[0] is string && data.allowedTools[0].size() <= 40)) &&
+             data.isEnabled is bool &&
+             data.autoExecute is bool &&
+             data.runCount is int && data.runCount >= 0 && data.runCount <= 1000000 &&
+             data.accentColorHex is string && data.accentColorHex.size() >= 4 && data.accentColorHex.size() <= 12 &&
+             isValidTimestamp(data.createdAt) &&
+             isValidTimestamp(data.updatedAt);
+    }
+
+    function isValidAutomationRule(data) {
+      return data.userId is string &&
+             data.userId == request.auth.uid &&
+             data.title is string && data.title.size() >= 1 && data.title.size() <= 80 &&
+             data.targetApp in ['WHATSAPP', 'GMAIL', 'SMS', 'PLAY_STORE', 'SYSTEM'] &&
+             data.triggerPattern is string && data.triggerPattern.size() >= 1 && data.triggerPattern.size() <= 200 &&
+             data.replyTemplateOrGoal is string && data.replyTemplateOrGoal.size() >= 1 && data.replyTemplateOrGoal.size() <= 1000 &&
+             data.useAiReply is bool &&
+             data.isActive is bool &&
+             data.requireConfirmation is bool &&
+             data.triggeredCount is int && data.triggeredCount >= 0 && data.triggeredCount <= 1000000 &&
+             isValidTimestamp(data.createdAt) &&
+             isValidTimestamp(data.updatedAt);
+    }
+
+    function isValidMemoryEntry(data) {
+      return data.userId is string &&
+             data.userId == request.auth.uid &&
+             data.title is string && data.title.size() >= 1 && data.title.size() <= 100 &&
+             data.content is string && data.content.size() >= 1 && data.content.size() <= 2000 &&
+             data.category in ['CHAT', 'AUTOMATION', 'MEMORY', 'OTP_RULE'] &&
+             data.agentName is string && data.agentName.size() <= 60 &&
+             isValidTimestamp(data.createdAt) &&
+             isValidTimestamp(data.updatedAt);
+    }
+
+    // --- Collection Rules ---
+    match /users/{userId} {
+      allow get: if isOwner(userId) && isValidId(userId);
+      allow list: if false;
+
+      allow create: if isOwner(userId) &&
+                       isValidId(userId) &&
+                       incoming().keys().hasAll(['userId', 'bossName', 'wakeWords', 'activeProvider', 'energyPoints', 'moodStatus', 'createdAt', 'updatedAt']) &&
+                       incoming().keys().hasOnly(['userId', 'bossName', 'wakeWords', 'activeProvider', 'energyPoints', 'moodStatus', 'createdAt', 'updatedAt']) &&
+                       isValidUserProfile(incoming());
+
+      allow update: if isOwner(userId) &&
+                       isValidId(userId) &&
+                       isValidUserProfile(incoming()) &&
+                       incoming().userId == existing().userId &&
+                       incoming().createdAt == existing().createdAt &&
+                       incoming().diff(existing()).affectedKeys().hasOnly(['bossName', 'wakeWords', 'activeProvider', 'energyPoints', 'moodStatus', 'updatedAt']);
+
+      allow delete: if isOwner(userId) && isValidId(userId);
+
+      match /agents/{agentId} {
+        allow get: if isOwner(userId) && isValidId(agentId);
+        allow list: if isOwner(userId);
+
+        allow create: if isOwner(userId) &&
+                         isValidId(agentId) &&
+                         incoming().keys().hasAll(['userId', 'name', 'role', 'systemPrompt', 'triggerType', 'allowedTools', 'isEnabled', 'autoExecute', 'runCount', 'accentColorHex', 'createdAt', 'updatedAt']) &&
+                         incoming().keys().hasOnly(['userId', 'name', 'role', 'systemPrompt', 'triggerType', 'allowedTools', 'isEnabled', 'autoExecute', 'runCount', 'accentColorHex', 'createdAt', 'updatedAt']) &&
+                         isValidCustomAgent(incoming());
+
+        allow update: if isOwner(userId) &&
+                         isValidId(agentId) &&
+                         isValidCustomAgent(incoming()) &&
+                         incoming().userId == existing().userId &&
+                         incoming().createdAt == existing().createdAt &&
+                         incoming().diff(existing()).affectedKeys().hasOnly(['name', 'role', 'systemPrompt', 'triggerType', 'allowedTools', 'isEnabled', 'autoExecute', 'runCount', 'accentColorHex', 'updatedAt']);
+
+        allow delete: if isOwner(userId) && isValidId(agentId);
+      }
+
+      match /automations/{ruleId} {
+        allow get: if isOwner(userId) && isValidId(ruleId);
+        allow list: if isOwner(userId);
+
+        allow create: if isOwner(userId) &&
+                         isValidId(ruleId) &&
+                         incoming().keys().hasAll(['userId', 'title', 'targetApp', 'triggerPattern', 'replyTemplateOrGoal', 'useAiReply', 'isActive', 'requireConfirmation', 'triggeredCount', 'createdAt', 'updatedAt']) &&
+                         incoming().keys().hasOnly(['userId', 'title', 'targetApp', 'triggerPattern', 'replyTemplateOrGoal', 'useAiReply', 'isActive', 'requireConfirmation', 'triggeredCount', 'createdAt', 'updatedAt']) &&
+                         isValidAutomationRule(incoming());
+
+        allow update: if isOwner(userId) &&
+                         isValidId(ruleId) &&
+                         isValidAutomationRule(incoming()) &&
+                         incoming().userId == existing().userId &&
+                         incoming().createdAt == existing().createdAt &&
+                         incoming().diff(existing()).affectedKeys().hasOnly(['title', 'targetApp', 'triggerPattern', 'replyTemplateOrGoal', 'useAiReply', 'isActive', 'requireConfirmation', 'triggeredCount', 'updatedAt']);
+
+        allow delete: if isOwner(userId) && isValidId(ruleId);
+      }
+
+      match /memories/{memoryId} {
+        allow get: if isOwner(userId) && isValidId(memoryId);
+        allow list: if isOwner(userId);
+
+        allow create: if isOwner(userId) &&
+                         isValidId(memoryId) &&
+                         incoming().keys().hasAll(['userId', 'title', 'content', 'category', 'agentName', 'createdAt', 'updatedAt']) &&
+                         incoming().keys().hasOnly(['userId', 'title', 'content', 'category', 'agentName', 'createdAt', 'updatedAt']) &&
+                         isValidMemoryEntry(incoming());
+
+        allow update: if isOwner(userId) &&
+                         isValidId(memoryId) &&
+                         isValidMemoryEntry(incoming()) &&
+                         incoming().userId == existing().userId &&
+                         incoming().createdAt == existing().createdAt &&
+                         incoming().diff(existing()).affectedKeys().hasOnly(['title', 'content', 'category', 'agentName', 'updatedAt']);
+
+        allow delete: if isOwner(userId) && isValidId(memoryId);
+      }
+    }
+  }
+}

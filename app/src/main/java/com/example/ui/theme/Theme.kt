@@ -1,6 +1,5 @@
 package com.example.ui.theme
 
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
@@ -14,21 +13,22 @@ private val NexaLightScheme =
   lightColorScheme(
     primary = NexaBlueCore,
     onPrimary = Color.White,
-    primaryContainer = Color(0xFFDBEAFE),
-    onPrimaryContainer = NexaInkPrimary,
-    secondary = NexaRoseRadar,
+    primaryContainer = Color(0xFFEAF1FF),
+    onPrimaryContainer = Color(0xFF173B83),
+    secondary = NexaVioletAccent,
     onSecondary = Color.White,
-    secondaryContainer = Color(0xFFFFE4E6),
-    onSecondaryContainer = Color(0xFF881337),
+    secondaryContainer = Color(0xFFF0EDFF),
+    onSecondaryContainer = Color(0xFF382477),
     tertiary = NexaCyanGlow,
-    onTertiary = NexaOrbSpace,
-    background = NexaFrostBgMid,
+    onTertiary = Color(0xFF06243A),
+    background = Color(0xFFFFFFFF),
     onBackground = NexaInkPrimary,
-    surface = NexaSurfaceWhite,
+    surface = Color(0xFFFFFFFF),
     onSurface = NexaInkPrimary,
-    surfaceVariant = Color(0xFFE7EFFC),
+    surfaceVariant = Color(0xFFF5F7FB),
     onSurfaceVariant = NexaInkSecondary,
-    outline = Color(0xFFC7D7F2),
+    outline = Color(0xFFDCE3ED),
+    outlineVariant = Color(0xFFEDF1F6),
   )
 
 private val NexaDarkScheme =
@@ -54,10 +54,10 @@ private val NexaDarkScheme =
 
 val NexaShapes =
   Shapes(
-    small = RoundedCornerShape(14.dp),
-    medium = RoundedCornerShape(22.dp),
-    large = RoundedCornerShape(28.dp),
-    extraLarge = RoundedCornerShape(36.dp),
+    small = RoundedCornerShape(12.dp),
+    medium = RoundedCornerShape(18.dp),
+    large = RoundedCornerShape(24.dp),
+    extraLarge = RoundedCornerShape(30.dp),
   )
 
 @Composable
@@ -65,9 +65,8 @@ fun NexaAiTheme(
   darkTheme: Boolean = false,
   content: @Composable () -> Unit,
 ) {
-  val colors = if (darkTheme) NexaDarkScheme else NexaLightScheme
   MaterialTheme(
-    colorScheme = colors,
+    colorScheme = if (darkTheme) NexaDarkScheme else NexaLightScheme,
     typography = NexaTypography,
     shapes = NexaShapes,
     content = content,

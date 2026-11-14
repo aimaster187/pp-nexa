@@ -2,25 +2,26 @@ package com.example.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val NexaFrostBgTop = Color(0xFFF1F6FF)
-val NexaFrostBgMid = Color(0xFFE3ECFB)
-val NexaFrostBgBottom = Color(0xFFD9E5FA)
+// ZED AI V1 — pure white, precision silver and electric blue.
+val NexaFrostBgTop = Color(0xFFFFFFFF)
+val NexaFrostBgMid = Color(0xFFFAFBFD)
+val NexaFrostBgBottom = Color(0xFFF2F5FA)
 
-val NexaSurfaceWhite = Color(0xFFF8FBFF)
-val NexaCardGlass = Color(0xEBF5F8FF)
-val NexaCardStroke = Color(0xFFFFFFFF)
-val NexaSoftShadow = Color(0x337691BD)
+val NexaSurfaceWhite = Color(0xFFFFFFFF)
+val NexaCardGlass = Color(0xF7FFFFFF)
+val NexaCardStroke = Color(0xFFE3E8F0)
+val NexaSoftShadow = Color(0x180F172A)
 
-val NexaInkPrimary = Color(0xFF15203B)
-val NexaInkSecondary = Color(0xFF5A6B8C)
+val NexaInkPrimary = Color(0xFF101828)
+val NexaInkSecondary = Color(0xFF667085)
 
-val NexaBlueCore = Color(0xFF3B82F6)
+val NexaBlueCore = Color(0xFF2563EB)
 val NexaCyanGlow = Color(0xFF38BDF8)
-val NexaRoseRadar = Color(0xFFFB7185)
-val NexaGoldNode = Color(0xFFFBBF24)
-val NexaEmeraldOk = Color(0xFF10B981)
-val NexaVioletAccent = Color(0xFF8B5CF6)
-val NexaOrbSpace = Color(0xFF0A0D18)
+val NexaRoseRadar = Color(0xFFEF476F)
+val NexaGoldNode = Color(0xFFF4B740)
+val NexaEmeraldOk = Color(0xFF12B886)
+val NexaVioletAccent = Color(0xFF7657E8)
+val NexaOrbSpace = Color(0xFF071426)
 
 val NexaDarkBgTop = Color(0xFF080D1B)
 val NexaDarkBgBottom = Color(0xFF101933)
