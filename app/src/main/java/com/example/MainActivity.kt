@@ -611,7 +611,7 @@ fun NexaMainWorkspace(
             }
             NexaTab.CONTROL -> {
               ZedSubRouteScreen(
-                route = "settings",
+                route = "yaadein",
                 onBack = { selectedTab = NexaTab.HOME },
                 onOpenRoute = { activeSubRoute = it; selectedTab = NexaTab.HOME },
                 onOpenApiKeys = { showApiKeysSheet = true },
@@ -652,6 +652,21 @@ fun NexaMainWorkspace(
         }
       }
     }
+  }
+
+  if (licState.popupId.isNotBlank() && licState.globalPopupMessage.isNotBlank()) {
+    AlertDialog(
+      onDismissRequest = { NexaLicenseManager.dismissPopup(context, licState.popupId) },
+      containerColor = Color(0xFFF4F8FF),
+      title = { Text(licState.globalPopupTitle.ifBlank { "ZED AI Announcement" }, color = Color(0xFF0F172A), fontWeight = FontWeight.Bold) },
+      text = { Text(licState.globalPopupMessage, color = Color(0xFF334155)) },
+      confirmButton = {
+        Button(
+          onClick = { NexaLicenseManager.dismissPopup(context, licState.popupId) },
+          colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2563EB))
+        ) { Text("OK", color = Color.White) }
+      }
+    )
   }
 
   if (showApiKeysSheet) {

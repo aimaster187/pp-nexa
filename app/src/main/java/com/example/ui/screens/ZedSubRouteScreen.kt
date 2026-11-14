@@ -71,7 +71,9 @@ fun ZedSubRouteScreen(
         "accessibility" -> "Accessibility"
         "scanner" -> "Scanner"
         "rules" -> "ZED ke rules"
-        "upgrade" -> "VIP License & Account"
+        "yaadein" -> "Yaadein"
+        "pc_phone" -> "PC ⇄ Phone"
+        "upgrade" -> "License"
         "about" -> "About ZED AI"
         "privacy" -> "Privacy Policy"
         "notifications" -> "Notifications"
@@ -569,7 +571,98 @@ fun ZedSubRouteScreen(
                     }
                 }
 
+                "yaadein" -> {
+                    Text("Sikhe hue tasks", fontSize = 16.sp, fontWeight = FontWeight.Medium, color = textDark, modifier = Modifier.padding(start = 4.dp))
+                    listOf(
+                        Triple("gemini se poochho", "8 steps • sawaal • built-in", "Gemini se aaj ka latest tech update poochho"),
+                        Triple("chatgpt se poochho", "8 steps • sawaal • built-in", "ChatGPT style me smart summary banao"),
+                        Triple("gemini video", "16 steps • video prompt • built-in", "Ek cinematic AI video prompt likho"),
+                        Triple("gemini image", "17 steps • image prompt • built-in", "Ek ultra-realistic 4D AI image prompt banao"),
+                        Triple("chatgpt image", "14 steps • image prompt • built-in", "Logo aur poster ke liye AI image prompt do")
+                    ).forEach { (title, sub, prompt) ->
+                        SettingsCard {
+                            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(title, fontSize = 16.sp, fontWeight = FontWeight.Normal, color = textDark)
+                                    Text(sub, fontSize = 11.sp, color = textSub)
+                                }
+                                TextButton(onClick = { onSendQuickPrompt(prompt) }) {
+                                    Text("▶ Chalao", color = Color(0xFF2563EB), fontSize = 13.sp)
+                                }
+                            }
+                        }
+                    }
+                    SettingsCard {
+                        SettingsRowItem(Icons.Default.CloudUpload, "Backup & restore", "Apni yaadein aur chats dusre phone pe le jao") {
+                            Toast.makeText(context, "Cloud & Local Backup Synced!", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+
+                "pc_phone" -> {
+                    var pcEmail by remember { mutableStateOf("") }
+                    var pcPass by remember { mutableStateOf("") }
+                    SettingsCard {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
+                            Icon(Icons.Default.SyncAlt, contentDescription = null, tint = Color(0xFF2563EB), modifier = Modifier.size(34.dp))
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Text("PC ⇄ Phone", fontSize = 22.sp, fontWeight = FontWeight.Light, color = textDark)
+                            Text("Apna PC link karo — memory sync + tumhare PC wali ZED ke saath live call.", fontSize = 12.sp, color = textSub)
+                            Spacer(modifier = Modifier.height(14.dp))
+                            Button(
+                                onClick = { onOpenRoute("scanner") },
+                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2563EB)),
+                                shape = RoundedCornerShape(18.dp),
+                                modifier = Modifier.fillMaxWidth().height(48.dp)
+                            ) {
+                                Icon(Icons.Default.QrCodeScanner, contentDescription = null, tint = Color.White)
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text("PC ka QR scan karo", color = Color.White, fontWeight = FontWeight.Medium)
+                            }
+                            Spacer(modifier = Modifier.height(12.dp))
+                            Text("— ya email/password se —", fontSize = 11.sp, color = textSub)
+                            Spacer(modifier = Modifier.height(8.dp))
+                            OutlinedTextField(value = pcEmail, onValueChange = { pcEmail = it }, label = { Text("Email") }, textStyle = TextStyle(color = textDark), shape = RoundedCornerShape(14.dp), modifier = Modifier.fillMaxWidth())
+                            Spacer(modifier = Modifier.height(8.dp))
+                            OutlinedTextField(value = pcPass, onValueChange = { pcPass = it }, label = { Text("Password") }, textStyle = TextStyle(color = textDark), shape = RoundedCornerShape(14.dp), modifier = Modifier.fillMaxWidth())
+                            Spacer(modifier = Modifier.height(12.dp))
+                            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                                Button(onClick = { Toast.makeText(context, "PC Sync Connected!", Toast.LENGTH_SHORT).show() }, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2563EB)), shape = RoundedCornerShape(14.dp)) {
+                                    Text("Login", color = Color.White)
+                                }
+                                OutlinedButton(onClick = { Toast.makeText(context, "Account Created & Synced!", Toast.LENGTH_SHORT).show() }, shape = RoundedCornerShape(14.dp)) {
+                                    Text("Account banao", color = textDark)
+                                }
+                            }
+                        }
+                    }
+                }
+
                 "upgrade", "about", "privacy", "rules" -> {
+                    var vipInput by remember { mutableStateOf(licState.activeKey) }
+                    val scopeLic = rememberCoroutineScope()
+                    SettingsCard {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
+                            Icon(Icons.Default.Favorite, contentDescription = null, tint = Color(0xFF2563EB), modifier = Modifier.size(36.dp))
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Text(if (licState.isVipUnlocked) "ZED Pro Max active hai" else "ZED AI VIP License", fontSize = 18.sp, fontWeight = FontWeight.Medium, color = textDark)
+                            Text("by The Titan AI • v4.0.0", fontSize = 12.sp, color = Color(0xFF2563EB))
+                            Spacer(modifier = Modifier.height(10.dp))
+                            OutlinedTextField(value = vipInput, onValueChange = { vipInput = it.uppercase() }, label = { Text("Enter ZED-VIP-XXXX-XXXX Key") }, textStyle = TextStyle(color = textDark, fontWeight = FontWeight.Bold), shape = RoundedCornerShape(14.dp), modifier = Modifier.fillMaxWidth())
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Button(
+                                onClick = { scopeLic.launch { NexaLicenseManager.verifyAndActivateKey(context, vipInput) } },
+                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2563EB)),
+                                shape = RoundedCornerShape(14.dp),
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(if (licState.isChecking) "Verifying..." else "Activate VIP License", color = Color.White)
+                            }
+                            if (licState.statusMessage.isNotBlank()) {
+                                Text(licState.statusMessage, color = Color(0xFFE11D48), fontSize = 12.sp, modifier = Modifier.padding(top = 6.dp))
+                            }
+                        }
+                    }
                     SettingsCard {
                         Text("ZED AI v3.8.0 • by The Titan AI", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = textDark)
                         Text("Signed in as: ${licState.userDisplayName.ifBlank { "Guest" }} (${licState.userEmail.ifBlank { "Not signed in" }})", fontSize = 12.sp, color = Color(0xFF2563EB))

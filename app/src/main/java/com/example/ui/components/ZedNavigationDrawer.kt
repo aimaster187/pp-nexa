@@ -33,11 +33,9 @@ fun ZedNavigationDrawerContent(
         drawerContainerColor = Color(0xFFE5EEFC),
         modifier = Modifier.width(305.dp)
     ) {
-        Column(
-            modifier = Modifier.fillMaxSize().background(frostBg).padding(horizontal = 16.dp, vertical = 14.dp)
-        ) {
+        Column(modifier = Modifier.fillMaxSize().background(frostBg).padding(horizontal = 16.dp, vertical = 14.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(bottom = 12.dp, top = 4.dp)) {
-                Surface(shape = RoundedCornerShape(14.dp), color = Color(0xFF0B1120), shadowElevation = 6.dp, modifier = Modifier.size(46.dp)) {
+                Surface(shape = RoundedCornerShape(14.dp), color = Color(0xFF090E1A), shadowElevation = 6.dp, modifier = Modifier.size(46.dp)) {
                     Box(contentAlignment = Alignment.Center) {
                         Icon(Icons.Default.AutoAwesome, contentDescription = null, tint = Color(0xFF38BDF8), modifier = Modifier.size(24.dp))
                     }
@@ -52,7 +50,7 @@ fun ZedNavigationDrawerContent(
             Column(modifier = Modifier.weight(1f).verticalScroll(scroll), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 DrawerSectionLabel("HOME")
                 DrawerPillButton("Home", Icons.Default.Home, activeRoute == "home") { onSelectRoute("home"); onCloseDrawer() }
-                DrawerPillButton("ZED Vision Scanner", Icons.Default.QrCodeScanner, activeRoute == "scanner") { onSelectRoute("scanner"); onCloseDrawer() }
+                DrawerPillButton("ZED Home", Icons.Default.Home, activeRoute == "zed_home") { onSelectRoute("zed_home"); onCloseDrawer() }
 
                 DrawerSectionLabel("KAAM-KAAJ")
                 DrawerPillButton("Markets", Icons.AutoMirrored.Filled.ShowChart, activeRoute == "markets") { onSelectRoute("markets"); onCloseDrawer() }
@@ -72,11 +70,11 @@ fun ZedNavigationDrawerContent(
                 DrawerSectionLabel("AUR")
                 DrawerPillButton("Privacy Policy", Icons.Default.Lock, activeRoute == "privacy") { onSelectRoute("privacy"); onCloseDrawer() }
                 DrawerPillButton("About", Icons.Default.Info, activeRoute == "about") { onSelectRoute("about"); onCloseDrawer() }
-                DrawerPillButton("Upgrade / VIP Key", Icons.Default.Star, activeRoute == "upgrade") { onSelectRoute("upgrade"); onCloseDrawer() }
+                DrawerPillButton("Upgrade", Icons.Default.Star, activeRoute == "upgrade") { onSelectRoute("upgrade"); onCloseDrawer() }
                 DrawerPillButton("Notifications", Icons.Default.Notifications, activeRoute == "notifications") { onSelectRoute("notifications"); onCloseDrawer() }
             }
 
-            Text("v3.8.0  •  The Titan AI", fontSize = 11.sp, color = Color(0xFF64748B), modifier = Modifier.padding(top = 8.dp, start = 4.dp))
+            Text("v4.0.0  •  The Titan AI", fontSize = 11.sp, color = Color(0xFF64748B), modifier = Modifier.padding(top = 8.dp, start = 4.dp))
         }
     }
 }

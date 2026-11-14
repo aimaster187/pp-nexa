@@ -3,97 +3,119 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>ZED AI — Titan Master Admin Panel</title>
+  <title>ZED AI — 3D Titan Master Admin</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <style>
-    body { background: #e8effa; color: #0f172a; font-family: system-ui, -apple-system, sans-serif; }
-    .card-4d { background: #f4f8ff; border-radius: 22px; box-shadow: 0 10px 25px rgba(30, 58, 138, 0.10), inset 0 1px 0 #ffffff; }
-    .pill-blue { background: linear-gradient(135deg, #3b82f6, #2563eb); color: #ffffff; box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35); }
+    body {
+      background: linear-gradient(160deg, #eaf1fc 0%, #d8e4f8 50%, #e5eefc 100%);
+      color: #0f172a;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+    .clay-3d {
+      background: linear-gradient(145deg, #f8fbff, #eaf1fc);
+      border-radius: 26px;
+      box-shadow: 10px 10px 24px rgba(30, 58, 138, 0.14), -8px -8px 20px rgba(255, 255, 255, 0.92), inset 0 1px 1px #ffffff;
+    }
+    .clay-inset {
+      background: #e6eefb;
+      border-radius: 16px;
+      box-shadow: inset 4px 4px 10px rgba(30, 58, 138, 0.12), inset -4px -4px 10px rgba(255, 255, 255, 0.9);
+    }
+    .btn-3d-blue {
+      background: linear-gradient(145deg, #4f94ff, #2563eb);
+      color: #ffffff;
+      border-radius: 18px;
+      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.38), inset 0 1px 1px rgba(255,255,255,0.45);
+    }
   </style>
 </head>
 <body class="min-h-screen p-4 pb-24">
   <div class="max-w-3xl mx-auto space-y-4">
-    <!-- Top Bar -->
-    <div class="card-4d p-4 flex items-center justify-between">
+    <!-- 3D Header -->
+    <div class="clay-3d p-5 flex items-center justify-between">
       <div>
-        <h1 class="text-xl font-bold text-slate-900">ZED AI — TITAN MASTER ADMIN</h1>
-        <p class="text-xs text-blue-600 font-medium">by The Titan AI • Full App & User Control (Pranav Patel)</p>
+        <h1 class="text-xl font-extrabold tracking-tight text-slate-900">ZED AI — 3D TITAN ADMIN</h1>
+        <p class="text-xs text-blue-600 font-semibold">by The Titan AI • Full Cloud & User Control (Pranav Patel)</p>
       </div>
-      <span class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700">● LIVE CLOUD</span>
+      <span class="px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700 shadow-sm">● LIVE 3D SYNC</span>
     </div>
 
-    <!-- 4 Live Stats -->
-    <div class="grid grid-cols-4 gap-2 text-center">
-      <div class="card-4d p-3">
-        <div id="statUsers" class="text-xl font-bold text-slate-900">0</div>
-        <div class="text-[11px] text-slate-500">TOTAL USERS</div>
+    <!-- 4 3D Stat Cards -->
+    <div class="grid grid-cols-4 gap-2.5 text-center">
+      <div class="clay-3d p-3">
+        <div id="statUsers" class="text-xl font-extrabold text-slate-900">0</div>
+        <div class="text-[10px] font-bold text-slate-500">APP USERS</div>
       </div>
-      <div class="card-4d p-3">
-        <div id="statVip" class="text-xl font-bold text-emerald-600">0</div>
-        <div class="text-[11px] text-slate-500">VIP ACTIVE</div>
+      <div class="clay-3d p-3">
+        <div id="statVip" class="text-xl font-extrabold text-emerald-600">0</div>
+        <div class="text-[10px] font-bold text-slate-500">VIP ACTIVE</div>
       </div>
-      <div class="card-4d p-3">
-        <div id="statUnused" class="text-xl font-bold text-blue-600">0</div>
-        <div class="text-[11px] text-slate-500">UNUSED KEYS</div>
+      <div class="clay-3d p-3">
+        <div id="statUnused" class="text-xl font-extrabold text-blue-600">0</div>
+        <div class="text-[10px] font-bold text-slate-500">UNUSED KEYS</div>
       </div>
-      <div class="card-4d p-3">
-        <div id="statBanned" class="text-xl font-bold text-rose-600">0</div>
-        <div class="text-[11px] text-slate-500">BANNED</div>
+      <div class="clay-3d p-3">
+        <div id="statBanned" class="text-xl font-extrabold text-rose-600">0</div>
+        <div class="text-[10px] font-bold text-slate-500">BANNED</div>
       </div>
     </div>
 
-    <!-- 3 Master Control Tabs -->
-    <div class="grid grid-cols-3 gap-2">
-      <button id="tabKeysBtn" onclick="switchTab('keys')" class="pill-blue py-2.5 rounded-xl text-xs font-bold">1. VIP KEYS</button>
-      <button id="tabUsersBtn" onclick="switchTab('users')" class="card-4d py-2.5 rounded-xl text-xs font-bold text-slate-700">2. APP USERS</button>
-      <button id="tabCtrlBtn" onclick="switchTab('ctrl')" class="card-4d py-2.5 rounded-xl text-xs font-bold text-slate-700">3. APP CONTROL</button>
+    <!-- 3D Master Tabs -->
+    <div class="grid grid-cols-3 gap-2.5">
+      <button id="tabKeysBtn" onclick="switchTab('keys')" class="btn-3d-blue py-3 text-xs font-bold">VIP KEYS</button>
+      <button id="tabUsersBtn" onclick="switchTab('users')" class="clay-3d py-3 text-xs font-bold text-slate-700">ALL USERS</button>
+      <button id="tabCtrlBtn" onclick="switchTab('ctrl')" class="clay-3d py-3 text-xs font-bold text-slate-700">APP CONTROL</button>
     </div>
 
     <!-- TAB 1: VIP KEYS -->
     <div id="panelKeys" class="space-y-3">
-      <div class="card-4d p-4 space-y-3">
-        <h2 class="text-xs font-bold text-slate-700 uppercase">Generate New VIP License Key</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-          <input id="clientInput" type="text" placeholder="Client Name / Email" class="px-3 py-2.5 rounded-xl bg-white border border-slate-200 text-sm outline-none" />
-          <select id="daysSelect" class="px-3 py-2.5 rounded-xl bg-white border border-slate-200 text-sm outline-none">
+      <div class="clay-3d p-4 space-y-3">
+        <h2 class="text-xs font-extrabold text-slate-700 uppercase">Generate New VIP Key (Works Instantly in App)</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+          <input id="clientInput" type="text" placeholder="Client Name / Gmail" class="clay-inset px-3.5 py-2.5 text-sm outline-none" />
+          <select id="daysSelect" class="clay-inset px-3.5 py-2.5 text-sm outline-none">
             <option value="1">1 Day Trial</option>
             <option value="7">7 Days VIP</option>
             <option value="30" selected>30 Days (1 Month VIP)</option>
             <option value="365">365 Days (1 Year VIP)</option>
             <option value="0">Lifetime Unlimited</option>
           </select>
-          <button onclick="forgeKey()" class="pill-blue py-2.5 px-4 rounded-xl font-bold text-sm active:scale-95 transition">+ GENERATE KEY</button>
+          <button onclick="forgeKey()" class="btn-3d-blue py-2.5 px-4 font-bold text-sm active:scale-95 transition">+ GENERATE KEY</button>
         </div>
       </div>
-      <input id="searchBox" oninput="renderLists()" type="text" placeholder="Search Keys or Client..." class="w-full px-4 py-3 rounded-2xl bg-white shadow-sm text-sm outline-none" />
-      <div id="keysContainer" class="space-y-2.5"></div>
+      <input id="searchBox" oninput="renderLists()" type="text" placeholder="Search Keys or Client..." class="clay-inset w-full px-4 py-3 text-sm outline-none" />
+      <div id="keysContainer" class="space-y-3"></div>
     </div>
 
-    <!-- TAB 2: ALL APP USERS (GOOGLE / EMAIL SIGNUPS) -->
+    <!-- TAB 2: ALL APP USERS -->
     <div id="panelUsers" class="space-y-3 hidden">
-      <input id="userSearchBox" oninput="renderLists()" type="text" placeholder="Search User Name, Gmail, Device..." class="w-full px-4 py-3 rounded-2xl bg-white shadow-sm text-sm outline-none" />
-      <div id="usersContainer" class="space-y-2.5"></div>
+      <input id="userSearchBox" oninput="renderLists()" type="text" placeholder="Search User Name, Gmail, Phone Model..." class="clay-inset w-full px-4 py-3 text-sm outline-none" />
+      <div id="usersContainer" class="space-y-3"></div>
     </div>
 
-    <!-- TAB 3: FULL REMOTE APP CONTROL -->
+    <!-- TAB 3: FULL REMOTE APP CONTROL & POPUP BROADCAST -->
     <div id="panelCtrl" class="space-y-3 hidden">
-      <div class="card-4d p-4 space-y-3">
-        <h2 class="text-sm font-bold text-slate-900">Remote App Settings (Live Sync to All Phones)</h2>
+      <div class="clay-3d p-5 space-y-3">
+        <h2 class="text-sm font-extrabold text-slate-900">Remote App Control & Live User Popup</h2>
         <div>
-          <label class="text-xs font-semibold text-slate-600">Daily Free Trial Minutes (Default = 10 mins/day)</label>
-          <input id="freeMinsInput" type="number" value="10" class="w-full mt-1 px-3 py-2.5 rounded-xl bg-white border border-slate-200 text-sm" />
+          <label class="text-xs font-bold text-slate-600">Daily Free Trial Minutes (Default = 10 mins/day)</label>
+          <input id="freeMinsInput" type="number" value="10" class="clay-inset w-full mt-1 px-3.5 py-2.5 text-sm outline-none" />
         </div>
         <div>
-          <label class="text-xs font-semibold text-slate-600">Global Announcement / Notice Banner</label>
-          <input id="bannerInput" type="text" placeholder="e.g. Welcome to ZED AI v3.8.0 by The Titan AI!" class="w-full mt-1 px-3 py-2.5 rounded-xl bg-white border border-slate-200 text-sm" />
+          <label class="text-xs font-bold text-slate-600">Live Popup Title (Appears on all user phones)</label>
+          <input id="popupTitleInput" type="text" placeholder="e.g. ZED AI v4.0 Update" class="clay-inset w-full mt-1 px-3.5 py-2.5 text-sm outline-none" />
+        </div>
+        <div>
+          <label class="text-xs font-bold text-slate-600">Live Popup Message / Broadcast</label>
+          <input id="bannerInput" type="text" placeholder="Type message to show popup on every user's screen..." class="clay-inset w-full mt-1 px-3.5 py-2.5 text-sm outline-none" />
         </div>
         <div class="flex items-center justify-between pt-1">
-          <span class="text-xs font-bold text-rose-600">Emergency Global Maintenance Lock</span>
+          <span class="text-xs font-bold text-rose-600">Global App Maintenance Lock</span>
           <input id="maintToggle" type="checkbox" class="w-5 h-5 accent-rose-600" />
         </div>
-        <button onclick="saveRemoteConfig()" class="pill-blue w-full py-3 rounded-xl font-bold text-sm">SAVE & PUSH TO ALL ZED AI APPS</button>
+        <button onclick="saveRemoteConfig()" class="btn-3d-blue w-full py-3 font-bold text-sm">PUSH LIVE POPUP & SETTINGS TO ALL APPS</button>
       </div>
     </div>
   </div>
@@ -117,9 +139,9 @@
       document.getElementById("panelKeys").classList.toggle("hidden", tab !== "keys");
       document.getElementById("panelUsers").classList.toggle("hidden", tab !== "users");
       document.getElementById("panelCtrl").classList.toggle("hidden", tab !== "ctrl");
-      document.getElementById("tabKeysBtn").className = tab === "keys" ? "pill-blue py-2.5 rounded-xl text-xs font-bold" : "card-4d py-2.5 rounded-xl text-xs font-bold text-slate-700";
-      document.getElementById("tabUsersBtn").className = tab === "users" ? "pill-blue py-2.5 rounded-xl text-xs font-bold" : "card-4d py-2.5 rounded-xl text-xs font-bold text-slate-700";
-      document.getElementById("tabCtrlBtn").className = tab === "ctrl" ? "pill-blue py-2.5 rounded-xl text-xs font-bold" : "card-4d py-2.5 rounded-xl text-xs font-bold text-slate-700";
+      document.getElementById("tabKeysBtn").className = tab === "keys" ? "btn-3d-blue py-3 text-xs font-bold" : "clay-3d py-3 text-xs font-bold text-slate-700";
+      document.getElementById("tabUsersBtn").className = tab === "users" ? "btn-3d-blue py-3 text-xs font-bold" : "clay-3d py-3 text-xs font-bold text-slate-700";
+      document.getElementById("tabCtrlBtn").className = tab === "ctrl" ? "btn-3d-blue py-3 text-xs font-bold" : "clay-3d py-3 text-xs font-bold text-slate-700";
     }
 
     function randomBlock() {
@@ -133,7 +155,6 @@
       const key = `ZED-VIP-${randomBlock()}-${randomBlock()}`;
       const now = Date.now();
       const expiresAt = days > 0 ? now + days * 86400000 : 0;
-
       await db.collection("zed_licenses").doc(key).set({
         key, clientName, status: "active", createdAt: now, expiresAt, deviceId: "", deviceModel: ""
       });
@@ -168,12 +189,18 @@
 
     async function saveRemoteConfig() {
       const freeTrialMinutes = parseInt(document.getElementById("freeMinsInput").value || "10", 10);
+      const popupTitle = document.getElementById("popupTitleInput").value.trim() || "ZED AI Official";
       const globalBanner = document.getElementById("bannerInput").value.trim();
       const maintenanceMode = document.getElementById("maintToggle").checked;
       await db.collection("zed_config").document("app_control").set({
-        freeTrialMinutes, globalBanner, maintenanceMode, updatedAt: Date.now()
+        freeTrialMinutes,
+        popupTitle,
+        globalBanner,
+        popupId: globalBanner ? "pop_" + Date.now() : "",
+        maintenanceMode,
+        updatedAt: Date.now()
       }, { merge: true });
-      alert("Live App Settings Updated for All ZED AI Users!");
+      alert("Live Popup & App Settings Pushed to All Phones!");
     }
 
     function renderLists() {
@@ -188,40 +215,40 @@
         .map(k => {
           const validTxt = k.expiresAt > 0 ? new Date(k.expiresAt).toLocaleDateString() : "Lifetime";
           const badge = k.status === "banned" ? "bg-rose-100 text-rose-700" : (k.status === "used" ? "bg-emerald-100 text-emerald-700" : "bg-blue-100 text-blue-700");
-          return `<div class="card-4d p-4 space-y-2">
+          return `<div class="clay-3d p-4 space-y-2">
             <div class="flex items-center justify-between">
-              <span class="font-mono font-bold text-base text-slate-900">${k.key}</span>
+              <span class="font-mono font-extrabold text-base text-slate-900">${k.key}</span>
               <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase ${badge}">${k.status}</span>
             </div>
             <div class="text-xs text-slate-600">Client: <b>${k.clientName}</b> • Validity: <b>${validTxt}</b> ${k.activatedByEmail ? "• User: " + k.activatedByEmail : ""}</div>
             <div class="flex flex-wrap gap-2 pt-1">
-              <button onclick="navigator.clipboard.writeText('${k.key}')" class="px-3 py-1.5 rounded-xl bg-white text-slate-800 text-xs font-bold shadow-sm">COPY</button>
-              <button onclick="resetDeviceKey('${k.key}')" class="px-3 py-1.5 rounded-xl bg-amber-500 text-white text-xs font-bold">RESET DEVICE</button>
-              <button onclick="toggleBanKey('${k.key}', '${k.status}')" class="px-3 py-1.5 rounded-xl bg-rose-500 text-white text-xs font-bold">${k.status === "banned" ? "UNBAN" : "BAN"}</button>
+              <button onclick="navigator.clipboard.writeText('${k.key}')" class="px-3 py-1.5 rounded-xl bg-white text-slate-800 text-xs font-bold shadow">COPY</button>
+              <button onclick="resetDeviceKey('${k.key}')" class="px-3 py-1.5 rounded-xl bg-amber-500 text-white text-xs font-bold shadow">RESET DEVICE</button>
+              <button onclick="toggleBanKey('${k.key}', '${k.status}')" class="px-3 py-1.5 rounded-xl bg-rose-500 text-white text-xs font-bold shadow">${k.status === "banned" ? "UNBAN" : "BAN"}</button>
               <button onclick="deleteKey('${k.key}')" class="px-3 py-1.5 rounded-xl bg-slate-200 text-slate-700 text-xs font-bold">DEL</button>
             </div>
           </div>`;
-        }).join("") || `<div class="card-4d p-4 text-center text-xs text-slate-500">No keys generated yet.</div>`;
+        }).join("") || `<div class="clay-3d p-4 text-center text-xs text-slate-500">No keys generated yet.</div>`;
 
       const uq = (document.getElementById("userSearchBox").value || "").trim().toLowerCase();
       document.getElementById("usersContainer").innerHTML = allUsers
-        .filter(u => !uq || ((u.name || "") + (u.email || "") + (u.deviceModel || "")).toLowerCase().includes(uq))
-        .map(u => `<div class="card-4d p-4 space-y-2">
+        .filter(u => !uq || ((u.name || "") + (u.email || "") + (u.deviceModel || "") + (u.deviceId || "")).toLowerCase().includes(uq))
+        .map(u => `<div class="clay-3d p-4 space-y-2">
           <div class="flex items-center justify-between">
             <div>
-              <div class="font-bold text-sm text-slate-900">${u.name || "User"}</div>
-              <div class="text-xs text-blue-600">${u.email || ""} • ${u.provider || "Google"}</div>
+              <div class="font-extrabold text-sm text-slate-900">${u.name || "User"}</div>
+              <div class="text-xs text-blue-600 font-medium">${u.email || ""} (${u.provider || "Google"})</div>
             </div>
             <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold ${u.banned ? "bg-rose-100 text-rose-700" : (u.isVip ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700")}">
-              ${u.banned ? "BANNED" : (u.isVip ? "VIP UNLOCKED" : "FREE 10M")}
+              ${u.banned ? "BANNED" : (u.isVip ? "VIP ACTIVE" : "FREE 10M")}
             </span>
           </div>
-          <div class="text-[11px] text-slate-500">Phone Model: ${u.deviceModel || "Android"} • Active Key: ${u.activeKey || "None"} • Last Seen: ${u.lastActiveAt ? new Date(u.lastActiveAt).toLocaleString() : "Now"}</div>
+          <div class="text-[11px] text-slate-600">Phone: <b>${u.deviceModel || "Android"}</b> • ID: <span class="font-mono">${u.deviceId || "N/A"}</span> • Key: <b>${u.activeKey || "None"}</b></div>
           <div class="flex gap-2 pt-1">
-            <button onclick="grantFreeVipToUser('${u.uid}', '${(u.name || "User").replace(/'/g, "")}')" class="px-3 py-1.5 rounded-xl pill-blue text-xs font-bold">UNLOCK LIFETIME VIP</button>
-            <button onclick="toggleBanUser('${u.uid}', ${!!u.banned})" class="px-3 py-1.5 rounded-xl bg-rose-500 text-white text-xs font-bold">${u.banned ? "UNBAN USER" : "BAN USER"}</button>
+            <button onclick="grantFreeVipToUser('${u.uid}', '${(u.name || "User").replace(/'/g, "")}')" class="btn-3d-blue px-3 py-1.5 text-xs font-bold">GRANT LIFETIME VIP</button>
+            <button onclick="toggleBanUser('${u.uid}', ${!!u.banned})" class="px-3 py-1.5 rounded-xl bg-rose-500 text-white text-xs font-bold shadow">${u.banned ? "UNBAN USER" : "BAN USER"}</button>
           </div>
-        </div>`).join("") || `<div class="card-4d p-4 text-center text-xs text-slate-500">No app users signed up yet.</div>`;
+        </div>`).join("") || `<div class="clay-3d p-4 text-center text-xs text-slate-500">No app users yet.</div>`;
     }
 
     renderLists();
